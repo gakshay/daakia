@@ -6,7 +6,7 @@ class AddFieldToUsers < ActiveRecord::Migration
     add_column :users, :mobile, :string, :limit => 64
     add_column :users, :age, :integer
     add_column :users, :gender, :string, :limit => 10 
-    add_column :users, :address, :text, :limit => 500 
+    add_column :users, :address, :text 
     add_column :users, :city, :string, :limit => 64 
     add_column :users, :state, :string, :limit => 64 
     add_column :users, :pincode, :string, :limit => 10 
