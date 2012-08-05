@@ -55,8 +55,20 @@ module DakiaWeb
 
     # Enable the asset pipeline
     config.assets.enabled = true
+    
+    #from devise help after rails generate devise:install
+    config.assets.initialize_on_precompile = false
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    config.action_mailer.smtp_settings = {
+    :enable_starttls_auto => true,
+    :address => "smtp.gmail.com",
+    :port => 587,
+    :domain => "gmail.com",
+    :authentication => :login,
+    :user_name => "edakia.in@gmail.com",
+    :password => "edakia517",
+    }
   end
 end

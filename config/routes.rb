@@ -1,4 +1,20 @@
 DakiaWeb::Application.routes.draw do
+  
+  resources :transactions do
+    get :receive, :on => :collection
+  end
+
+  resources :documents
+
+  devise_for :users, :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }
+
+  get "home/index"
+  root :to => "home#index"
+  
+  namespace :api do
+    resources :users 
+  end
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

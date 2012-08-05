@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DakiaWeb</title>
-  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <title>eDakia</title>
+  <link rel="shortcut icon" href="/assets/favicon.ico" />
+  <%= stylesheet_link_tag "application" %>
   <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
+  <%= csrf_meta_tag %>
 </head>
 <body>
+  <div class="header" style="width: 900px; margin: auto;">
+	<% if user_signed_in? %>  
+		<%= link_to image_tag("logo.jpg"), "/transactions" %> 
+	<% else %>  
+		<%= link_to image_tag("logo.jpg"), "/" %> 
+    <% end %>
+	<div class="right">
+	  <% if user_signed_in? %>  
+		<%= link_to current_user.mobile, edit_user_registration_path %> | <span><%= link_to "Sign out", destroy_user_session_path, :class => "button gray small" %></span>
+		<span><%= link_to "Get Mail", receive_transactions_url, :class => "button gray small" %></span> 
+		<span><%= link_to "Send Mail", new_transaction_url, :class => "button gray small" %></span>
+	  <% else %>
+		<span><%= link_to "Login", new_user_session_url, :class => "button gray small" %></span>  
+		<span><%= link_to "Register", new_user_registration_url, :class => "button gray small" %></span> 
+		<span><%= link_to "Get Mail", receive_transactions_url, :class => "button gray small" %></span> 
+		<span><%= link_to "Send Mail", new_transaction_url, :class => "button gray small" %></span>
+	  <% end %>
+		<p class="notice"><%= notice %></p>
+		<p class="alert"><%= alert %></p>
+	</div>
 
-<%= yield %>
-
+  </div>
+  <div class="content-wrapper">
+	<div class="content">
+		<%= yield %>
+	</div>
+  </div>
 </body>
 </html>
