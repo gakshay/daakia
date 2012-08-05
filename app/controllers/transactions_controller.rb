@@ -26,7 +26,6 @@ class TransactionsController < ApplicationController
     end
   end
   
-  
   # POST /transactions
   # POST /transactions.xml
   def create

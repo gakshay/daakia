@@ -37,7 +37,7 @@ class Transaction < ActiveRecord::Base
   end
 
   def assign_receiver
-    user = User.where("mobile = ? or email = ?", self.receiver_mobile, self.receiver_mobile).select("id, mobile, email").first
+    user = User.where("mobile = ? or email = ?", self.receiver_mobile, self.receiver_email).select("id, mobile, email").first
     self.receiver_id = user.id unless user.blank?
     self.receiver_mobile = user.mobile unless user.blank?
     self.receiver_email = user.email unless user.blank?

@@ -3,8 +3,7 @@ class TransactionMailer < ActionMailer::Base
   
   def welcome_email(user)
     @user = user
-    @url = "http://dev.edakia.com:99"
-    mail(:to => @user.email, :subject => "Welcome to the eDakia Site")
+    mail(:to => @user.email, :subject => "Welcome to the eDakia")
   end
   
   def send_recipient_email(transaction)
