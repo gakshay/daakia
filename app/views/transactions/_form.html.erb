@@ -1,29 +1,38 @@
-<%= form_for(@transaction, :html => {:multipart => true}) do |f| %>
-  <% if @transaction.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@transaction.errors.count, "error") %> prohibited this transaction from being saved:</h2>
-
-      <ul>
-      <% @transaction.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+<%= form_for @transaction, :html => { :class => 'form-horizontal' } do |f| %>
+  <div class="control-group">
+    <%= f.label :receiver_mobile, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :receiver_mobile, :class => 'text_field' %>
     </div>
+  </div>
+  <div class="controls">
+    Or
+  </div>
+  <br>
+  <div class="control-group">
+    <%= f.label :receiver_email, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :receiver_email, :class => 'text_field' %>
+    </div>
+  </div>
+  <%= f.hidden_field :sender_mobile, :value => current_user.mobile %>
+  
+  <%= f.fields_for :document, @transaction.document do |document_form| %>
+    <div class="control-group">
+      <%= document_form.label :doc, :class => 'control-label' %>
+      <div class="controls">
+        <%= document_form.file_field :doc, :class => 'file_field' %>
+      </div>
+    </div>
+      <p><%#= document_form.label :doc, "Doc File" %>
+      <%#= document_form.file_field :doc %>
+      <%= document_form.hidden_field :user_id, :value => current_user.id %>
+      </p>
   <% end %>
 
-  <p><%= f.label :receiver_mobile %> <br>
-  <%= f.text_field :receiver_mobile %> <br>
-  Or <br>
-  <%= f.label :receiver_email %> <br>
-  <%= f.email_field :receiver_email %> </p>
-
-  <%= f.hidden_field :sender_mobile, :value => current_user.mobile %>
-  <p><%#= f.label :document_label %> <br>
-  <%#= f.text_field :document_label %> </p>
-  
-  <%= add_document(f) %>
-  
-  <div class="actions">
-    <%= f.submit "Edit Mail", :class => "button green" %>
+  <div class="form-actions">
+    <%= f.submit "Send Mail", :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                transactions_path, :class => 'btn' %>
   </div>
 <% end %>

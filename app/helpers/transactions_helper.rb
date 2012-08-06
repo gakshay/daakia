@@ -1,4 +1,5 @@
-module TransactionsHelper
+module TransactionsHelper  
+=begin
 	def add_document(form_builder)
   	link_to_function "add", :id  => "add_document" do |page|
     	form_builder.fields_for :document, Document.new, :child_index => 'NEW_RECORD' do |document_form|
@@ -17,4 +18,5 @@ module TransactionsHelper
       link_to_function("Remove this Document", "this.up('fieldset').hide(); $(this).previous().value = '1'")
     end
   end
+=end
 end

@@ -81,7 +81,7 @@ class TransactionsController < ApplicationController
   # DELETE /transactions/1.xml
   def destroy
     #@transaction = Transaction.find(params[:id])
-    @transaction = Transaction.where("id = ? and (sender_mobile = ? or receiver_mobile = ?)  ", params[:id], current_user.mobile, current_user.mobile)
+    @transaction = Transaction.where("id = ? and (sender_mobile = ? or receiver_mobile = ?)  ", params[:id], current_user.mobile, current_user.mobile).first
     @transaction.destroy
 
     respond_to do |format|

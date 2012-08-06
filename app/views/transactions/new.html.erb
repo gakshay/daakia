@@ -1,5 +1,7 @@
-<h1>Send new mail</h1>
-
-<%= render 'form_send' %>
-
-<%= link_to 'Back', transactions_path %>
+<%- model_class = Transaction -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => t('helpers.titles.new', :model => model_class.model_name.human, :default => "New Mail") %>
+      <%#= :default => "New #{model_class.model_name.human}") %>
+  </h1>
+</div>
+<%= render :partial => 'form' %>

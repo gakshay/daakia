@@ -1,6 +1,7 @@
 class Transaction < ActiveRecord::Base
-
-  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes
+  default_scope :order => 'created_at DESC'
+  
+  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
   validates_format_of :sender_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true

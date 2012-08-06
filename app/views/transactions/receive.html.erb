@@ -1,4 +1,4 @@
-<h1>Receive Document</h1>
+<h1>Receive Mail</h1>
 
 <%= form_for(@transaction, :url => receive_transactions_path,  :html => {:method => :get}) do |f| %>
   <% if @transaction.errors.any? %>
@@ -13,18 +13,34 @@
     </div>
   <% end %>
 
-  <p><%= f.label :receiver_mobile %> <br>
-  <%= f.text_field :receiver_mobile %> </p>
-  Or
-  <p><%= f.label :receiver_email %> <br>
-  <%= f.email_field :receiver_email %> </p>
+  <hr>
+  <br>
+  <div class="control-group">
+    <%= f.label :receiver_mobile, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :receiver_mobile, :class => 'text_field' %>
+    </div>
+  </div>
+  <p>Or</p>
+  <div class="control-group">
+    <%= f.label :receiver_email, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :receiver_email, :class => 'text_field' %>
+    </div>
+  </div>
   
-  <p><%= f.label :document_secret %> <br>
-  <%= f.text_field :document_secret %> </p>
+  <div class="control-group">
+    <%= f.label :document_secret, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :document_secret, :class => 'text_field' %>
+    </div>
+  </div>
 
   <div class="actions">
-    <%= f.submit "Receive Mail", :class => "button blue" %>
+    <%= f.submit "Receive Mail", :class => "btn btn-primary" %>
   </div>
 <% end %>
 
+<% if !current_user %>
 <%= link_to 'Login', new_user_session_url %> | <%= link_to 'Register', new_user_registration_url %>
+<% end%>

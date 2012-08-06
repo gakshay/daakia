@@ -1,36 +1,58 @@
-<h1><%= current_user.mobile %>'s Document Store</h1>
-<%= link_to 'Send New eDakia mail', new_transaction_path, :class => "button gray" %>
+<%- model_class = Transaction -%>
+<div class="page-header">
+  <h1><%#=t '.title', :default => model_class.model_name.human.pluralize %>All Mails</h1>
+</div>
 
-<% unless @transactions.blank? %>
-<table>
-  <tr>
-    <th>S.No</th>
-    <th>Document</th>
-    <th>Date</th>
-    <th>Secret Code</th>
-    <th></th>
-  </tr>
-	<% @transactions.each do |transaction| %>
-	  <tr>
-	    <td><%= link_to "#{transaction.id}", transaction %></td>
-	    <td><%= link_to "#{transaction.document.doc_file_name}", transaction, :class => "white small" %></td>
-	    <td><% if transaction.created_at.to_date == Date.today  %>
-			<%=		transaction.created_at.strftime("%I:%M %p")	%>
-			<% else %>
-			<%=		transaction.created_at.strftime("%d-%b-%Y") %>
-			<% end	 %>
-		</td>
-	    <td><%= transaction.document_secret %></td>
-		<td><%= link_to "Download", transaction.document.doc.url(:original, false), :class => "button green small" %></td> 
-	    <td><%#= link_to 'Edit', edit_transaction_path(transaction) %></td>
-	    <td><%= link_to 'x', transaction, :confirm => 'Are you sure?', :method => :delete %></td>
-	 </tr>
-	<% end %>
-<% else %>
-	<p>No eDakia Mail sent.</p>
-	<p>Click "Send New eDakia Mail" and share documents on mobile number</p>
-<% end %>
+<%#= link_to t('.new', :default => t("helpers.links.new")),
+            new_transaction_path,
+            :class => 'btn btn-primary' %>
+
+<%= link_to "New Mail",
+new_transaction_path,
+:class => 'btn btn-primary' %>
+            
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= model_class.human_attribute_name(:id) %></th>
+      <th><%= "Document" %></th>
+      <th><%= model_class.human_attribute_name(:document_secret) %></th>
+      <th><%= model_class.human_attribute_name(:sender_mobile) %></th>
+      <th><%= model_class.human_attribute_name(:receiver_mobile) %></th>
+      <!--<th><%#= model_class.human_attribute_name(:receiver_email) %></th> -->
+      <th><%= model_class.human_attribute_name(:created_at) %></th>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @transactions.each do |transaction| %>
+      <tr>
+        <td><%= link_to transaction.id, transaction_path(transaction) %></td>
+        <td><%= link_to "#{transaction.document.doc_file_name}", transaction.document.doc.url(:original, false), :class => "btn btn-mini" %></td>
+        <td><%= transaction.document_secret %></td>
+        <td><%= transaction.sender_mobile %></td>
+        <td><%= transaction.receiver_mobile %></td>
+        <!-- <td><%#= transaction.receiver_email %></td> -->
+        <td><%#=l transaction.created_at %>
+          <% if transaction.created_at.to_date == Date.today  %>
+            <%= transaction.created_at.strftime("%I:%M %p")     %>
+          <% else %>
+            <%= transaction.created_at.strftime("%d-%b-%Y %I:%M") %>
+          <% end   %>
+        </td>
+        <td>
+          <%= link_to "Download", transaction.document.doc.url(:original, false), :class => "btn btn-mini" %>
+          <%#= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_transaction_path(transaction), :class => 'btn btn-mini' %>
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      transaction_path(transaction),
+                      :method => :delete,
+                      :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+                      :class => 'btn btn-mini btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
 
-<br />
 
