@@ -4,7 +4,7 @@ class TransactionsController < ApplicationController
   # GET /transactions
   # GET /transactions.xml
   def index
-    @transactions = Transaction.where("sender_mobile = ? or receiver_mobile = ? or receiver_email = ?", current_user.mobile, current_user.mobile, current_user.email).order("created_at")
+    @transactions = Transaction.where("sender_mobile = ? or receiver_mobile = ? or receiver_email = ?", current_user.mobile, current_user.mobile, current_user.email).includes(:document).order("created_at DESC")
     #print request.env.inspect
     respond_to do |format|
       format.html # index.html.erb
@@ -82,11 +82,29 @@ class TransactionsController < ApplicationController
   def destroy
     #@transaction = Transaction.find(params[:id])
     @transaction = Transaction.where("id = ? and (sender_mobile = ? or receiver_mobile = ?)  ", params[:id], current_user.mobile, current_user.mobile).first
-    @transaction.destroy
+    Transaction.update(@transaction.id, :active => false)
 
     respond_to do |format|
       format.html { redirect_to(transactions_url) }
       format.xml  { head :ok }
+    end
+  end
+  
+  def download
+    unless params[:id].blank? && params[:trarnsaction].blank?
+      @transaction = Transaction.find(params[:id])
+      print @transaction.inspect
+      unless @transaction.blank?
+        Transaction.increment_counter(:download_count, params[:id])
+        @document = @transaction.document
+        respond_to do |format|
+          format.html { send_file "public#{@document.doc.url(:original, false)}" , :type => "#{@document.doc_content_type}" }
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to(transactions_url) }
+        end
+      end
     end
   end
 

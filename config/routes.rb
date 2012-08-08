@@ -2,6 +2,7 @@ DakiaWeb::Application.routes.draw do
   
   resources :transactions do
     get :receive, :on => :collection
+    post :download, :on => :member
   end
 
   resources :documents

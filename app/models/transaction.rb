@@ -1,7 +1,6 @@
 class Transaction < ActiveRecord::Base
-  default_scope :order => 'created_at DESC'
-  
-  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret
+  default_scope {where(:active => true)}
+  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
   validates_format_of :sender_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
@@ -20,10 +19,10 @@ class Transaction < ActiveRecord::Base
   def self.get_document(mobile, email, secure_code)
     unless (mobile.blank? or email.blank?) and secure_code.blank?
       transaction = Transaction.where("(sender_mobile = ? OR receiver_mobile = ? OR receiver_email = ?) AND document_secret = ?", mobile, mobile, email, secure_code)
+      increment_counter(:download_count, transaction.first.id) unless transaction.blank?
       transaction.first unless transaction.blank?
     else
       record.errors.add(document_secret, "secret is wrong") if secure_code.blank?
-
     end
   end
 
