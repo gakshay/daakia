@@ -7,7 +7,7 @@ DakiaWeb::Application.routes.draw do
 
   resources :documents
 
-  devise_for :users, :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }
+  devise_for :users, :controllers => { :registrations => "registrations" }, :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }
 
   get "home/index"
   root :to => "home#index"
