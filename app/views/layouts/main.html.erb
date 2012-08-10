@@ -52,9 +52,10 @@
           <div class="container-fluid nav-collapse">
             <ul class="nav">
               <% if user_signed_in? %> 
-                <li><%= link_to_unless current_user.first_name.blank?, current_user.first_name + " (#{current_user.unread_count}) #{number_to_phone(current_user.mobile)}", edit_user_registration_path do
+                <li><%#= link_to_unless current_user.first_name.blank?, current_user.first_name + " (#{current_user.unread_count}) #{number_to_phone(current_user.mobile)}", edit_user_registration_path do
                   link_to current_user.mobile + " (#{current_user.unread_count})", edit_user_registration_path 
-                  end %></li>
+                  end %>
+                  <%= link_to current_user.mobile + " (#{current_user.unread_count})", edit_user_registration_path %></li>
                 <li><%= link_to "Sign out", destroy_user_session_path  %></li>
               <% else %>
                 <li><%= link_to "Login", new_user_session_url  %></li>
