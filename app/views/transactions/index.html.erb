@@ -1,6 +1,6 @@
 <%- model_class = Transaction -%>
 <div class="page-header">
-  <h1><%#=t '.title', :default => model_class.model_name.human.pluralize %>All Mails</h1>
+  <h1><%#=t '.title', :default => model_class.model_name.human.pluralize %>All Mails<%= " (#{number_to_phone(current_user.mobile)})"%></h1>
 </div>
 
 <%#= link_to t('.new', :default => t("helpers.links.new")),
@@ -26,12 +26,13 @@ new_transaction_path,
   </thead>
   <tbody>
     <% @transactions.each_with_index do |transaction, i| %>
-      <tr>
+      <% unread = (current_user.id == transaction.receiver_id && transaction.unread?) ? "class='unread'" : ""%>
+      <tr <%= unread %> >
         <td><%= link_to i+1, transaction_path(transaction) %></td>
         <td><%= link_to "#{transaction.document.doc_file_name}", download_transaction_path(transaction), :method => :post, :class => "btn btn-mini" %></td>
         <td><%= transaction.document_secret %></td>
         <td><%= transaction.sender_mobile %></td>
-        <td><%= transaction.receiver_mobile %><%= transaction.receiver_email %></td>
+        <td><%= transaction.receiver_mobile %><br><%= transaction.receiver_email %></td>
         <!-- <td><%#= transaction.receiver_email %></td> -->
         <td><%#=l transaction.created_at %>
           <% if transaction.created_at.to_date == Date.today  %>
@@ -41,7 +42,7 @@ new_transaction_path,
           <% end   %>
         </td>
         <td>
-          <%= link_to "Download", download_transaction_path(transaction), :method => :post, :class => "btn btn-mini" %>
+          <%= link_to "Download", download_transaction_path(transaction), :method => :post, :class => "btn btn-mini btn-success" %>
           <%#= link_to t('.edit', :default => t("helpers.links.edit")),
                       edit_transaction_path(transaction), :class => 'btn btn-mini' %>
           <%= link_to t('.destroy', :default => t("helpers.links.destroy")),

@@ -95,7 +95,11 @@ class TransactionsController < ApplicationController
       @transaction = Transaction.find(params[:id])
       print @transaction.inspect
       unless @transaction.blank?
-        Transaction.increment_counter(:download_count, params[:id])
+        @transaction.increment_download_count
+        if (@transaction.unread? && current_user.id == @transaction.receiver_id )
+          @transaction.mark_mail_read 
+          current_user.decrement_unread_count
+        end
         @document = @transaction.document
         respond_to do |format|
           format.html { send_file "public#{@document.doc.url(:original, false)}" , :type => "#{@document.doc_content_type}" }

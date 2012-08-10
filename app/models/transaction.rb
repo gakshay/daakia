@@ -1,6 +1,7 @@
 class Transaction < ActiveRecord::Base
+  
   default_scope {where(:active => true)}
-  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active
+  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active, :read
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
   validates_format_of :sender_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
@@ -18,9 +19,14 @@ class Transaction < ActiveRecord::Base
  
   def self.get_document(mobile, email, secure_code)
     unless (mobile.blank? or email.blank?) and secure_code.blank?
-      transaction = Transaction.where("(sender_mobile = ? OR receiver_mobile = ? OR receiver_email = ?) AND document_secret = ?", mobile, mobile, email, secure_code)
-      increment_counter(:download_count, transaction.first.id) unless transaction.blank?
-      transaction.first unless transaction.blank?
+      transaction = Transaction.where("(sender_mobile = ? OR receiver_mobile = ? OR receiver_email = ?) AND document_secret = ?", mobile, mobile, email, secure_code).first
+      transaction.increment_download_count unless transaction.blank?
+      if (transaction.unread? && (transaction.receiver_mobile == mobile || transaction.receiver_email == email))
+        transaction.mark_mail_read
+        user = User.where("mobile = :mobile or email = :email", :mobile => mobile, :email => email)
+        user.first.decrement_unread_count unless user.blank? # decrement unread count for first user
+      end
+      transaction unless transaction.blank?
     else
       record.errors.add(document_secret, "secret is wrong") if secure_code.blank?
     end
@@ -39,8 +45,9 @@ class Transaction < ActiveRecord::Base
   def assign_receiver
     user = User.where("mobile = ? or email = ?", self.receiver_mobile, self.receiver_email).select("id, mobile, email").first
     self.receiver_id = user.id unless user.blank?
-    self.receiver_mobile = user.mobile unless user.blank?
-    self.receiver_email = user.email unless user.blank?
+    user.increment_unread_count unless user.blank?
+    #self.receiver_mobile = user.mobile unless user.blank?
+    #self.receiver_email = user.email unless user.blank?
   end
 
   def generate_document_secret
@@ -55,6 +62,19 @@ class Transaction < ActiveRecord::Base
     unless self.receiver_email.blank?
       TransactionMailer.send_recipient_email(self).deliver
     end
+  end
+  
+  def increment_download_count
+    Transaction.increment_counter(:download_count, self.id)
+  end
+  
+  def mark_mail_read
+    Transaction.update(self.id, :read => 1)
+    #decrement_unread_count(user_id)
+  end
+  
+  def unread?
+    !self.read
   end
 
   protected
