@@ -102,7 +102,7 @@ class TransactionsController < ApplicationController
         end
         @document = @transaction.document
         respond_to do |format|
-          format.html { send_file "public#{@document.doc.url(:original, false)}" , :type => "#{@document.doc_content_type}" }
+          format.html { redirect_to URI.encode @document.doc.url(:original, false) }
         end
       else
         respond_to do |format|
@@ -120,7 +120,7 @@ class TransactionsController < ApplicationController
         unless @transaction.blank?
           @document = @transaction.document
           respond_to do |format|
-            format.html { send_file "public#{@document.doc.url(:original, false)}" , :type => "#{@document.doc_content_type}" }
+            format.html { redirect_to URI.encode @document.doc.url(:original, false) }
             format.xml #receive.xml 
           end
         else

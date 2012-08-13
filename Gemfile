@@ -13,6 +13,7 @@ gem "devise"
 gem "paperclip"
 gem 'i18n', '0.6.0'
 gem "heroku"
+gem 'aws-sdk'
 
 # Gems used only for assets and not required
 # in production environments by default.
