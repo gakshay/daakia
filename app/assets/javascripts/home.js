@@ -18,3 +18,5 @@ $(':input[title]').each(function() {
     }
   });
 });
+
+$('.carousel').carousel({interval: 2000})
