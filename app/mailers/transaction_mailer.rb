@@ -12,7 +12,8 @@ class TransactionMailer < ActionMailer::Base
       @document_secret = transaction.document_secret
       unless @recipient_email.blank?
         @sender = transaction.sender_mobile
-        attachments["#{transaction.document.doc_file_name}"]  = File.read("#{Rails.root}/public#{transaction.document.doc.url.gsub(/\?\d+/, '')}")
+        @document = transaction.document
+        #attachments["#{transaction.document.doc_file_name}"]  = File.read("#{transaction.document.doc.url(:original, false)}")
         mail(:to => @recipient_email, :from => "#{@sender}@edakia.in", :subject => "New mail from #{@sender}")
       end
     end
