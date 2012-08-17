@@ -56,10 +56,10 @@ class Transaction < ActiveRecord::Base
 
   def deliver_document_secret_sms
     # code to send sms to sender and receiver
-    unless self.receiver_mobile.blank?
-      sms = SMS::Smscraze.new(self.sender_mobile, self.receiver_mobile, self.document_secret, self.document.doc.url(:original,false))
-      sms.deliver_document_sms
-    end
+    #unless self.receiver_mobile.blank?
+    #  sms = SMS::Smscraze.new(self.sender_mobile, self.receiver_mobile, self.document_secret, self.document.doc.url(:original,false))
+    #  sms.deliver_document_sms
+    #end
   end
   
   def send_recipient_email
