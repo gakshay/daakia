@@ -16,6 +16,7 @@ class Transaction < ActiveRecord::Base
   #validates_presence_of :document_id
   belongs_to :document
   accepts_nested_attributes_for :document
+  has_many :events
  
   def self.get_document(mobile, email, secure_code)
     unless (mobile.blank? or email.blank?) and secure_code.blank?
