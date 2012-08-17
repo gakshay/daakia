@@ -14,6 +14,7 @@ gem "paperclip"
 gem 'i18n', '0.6.0'
 gem "heroku"
 gem 'aws-sdk'
+gem 'curb'
 
 # Gems used only for assets and not required
 # in production environments by default.
