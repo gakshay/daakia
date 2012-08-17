@@ -3,6 +3,10 @@ class ApplicationController < ActionController::Base
   layout "main"
   
   def after_sign_in_path_for(resource)
-   transactions_path
+    if resource.is_a?(User)
+      transactions_path
+    else
+      super
+    end
   end
 end
