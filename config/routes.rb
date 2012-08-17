@@ -1,5 +1,7 @@
 DakiaWeb::Application.routes.draw do
   
+  devise_for :retailers, :path_names => { :sign_in => 'login', :sign_out => 'logout'}
+
   ActiveAdmin.routes(self)
 
   devise_for :admin_users, ActiveAdmin::Devise.config

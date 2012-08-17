@@ -1,8 +1,9 @@
-class DeviseCreateAdminUsers < ActiveRecord::Migration
+class DeviseCreateRetailers < ActiveRecord::Migration
   def change
-    create_table(:admin_users) do |t|
+    create_table(:retailers) do |t|
       ## Database authenticatable
       t.string :email,              :null => false, :default => ""
+      t.string   :mobile, :limit => 64
       t.string :encrypted_password, :null => false, :default => ""
 
       ## Recoverable
@@ -18,8 +19,16 @@ class DeviseCreateAdminUsers < ActiveRecord::Migration
       t.datetime :last_sign_in_at
       t.string   :current_sign_in_ip
       t.string   :last_sign_in_ip
-      t.string   :mobile, :limit => 64
-
+      t.string   :first_name, :limit => 64
+      t.string   :last_name, :limit => 64
+      t.float    :balance, :default => 0.0
+      t.integer  :age
+      t.string   :gender, :limit => 10 
+      t.text     :address 
+      t.string   :city, :limit => 64 
+      t.string   :state, :limit => 64 
+      t.string   :pincode, :limit => 10
+      
       ## Confirmable
       # t.string   :confirmation_token
       # t.datetime :confirmed_at
@@ -37,15 +46,12 @@ class DeviseCreateAdminUsers < ActiveRecord::Migration
 
       t.timestamps
     end
-
-    # Create a default user
-    AdminUser.create!(:email => 'admin@edakia.in', :password => 'admin517', :password_confirmation => 'admin517', :mobile => "+919711335593")
-
-    add_index :admin_users, :mobile,               :unique => true
-    add_index :admin_users, :email,                :unique => true
-    add_index :admin_users, :reset_password_token, :unique => true
-    # add_index :admin_users, :confirmation_token,   :unique => true
-    # add_index :admin_users, :unlock_token,         :unique => true
-    # add_index :admin_users, :authentication_token, :unique => true
+  
+    add_index :retailers, :mobile,               :unique => true
+    add_index :retailers, :email,                :unique => true
+    add_index :retailers, :reset_password_token, :unique => true
+    # add_index :retailers, :confirmation_token,   :unique => true
+    # add_index :retailers, :unlock_token,         :unique => true
+    # add_index :retailers, :authentication_token, :unique => true
   end
 end
