@@ -13,5 +13,8 @@ class AdminUser < ActiveRecord::Base
   validates_uniqueness_of :mobile, :allow_blank => true
   validates_numericality_of :mobile, :only_integer => true, :allow_nil  => true
   
-  
+  protected 
+  def mobile_required?
+    true
+  end
 end

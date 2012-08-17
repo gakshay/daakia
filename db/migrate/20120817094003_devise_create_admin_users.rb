@@ -18,6 +18,7 @@ class DeviseCreateAdminUsers < ActiveRecord::Migration
       t.datetime :last_sign_in_at
       t.string   :current_sign_in_ip
       t.string   :last_sign_in_ip
+      t.string   :mobile, :limit => 64
 
       ## Confirmable
       # t.string   :confirmation_token
@@ -38,7 +39,7 @@ class DeviseCreateAdminUsers < ActiveRecord::Migration
     end
 
     # Create a default user
-    AdminUser.create!(:email => 'admin@edakia.in', :password => 'admin123', :password_confirmation => 'admin123')
+    AdminUser.create!(:email => 'admin@edakia.in', :password => 'admin517', :password_confirmation => 'admin517', :mobile => "+919711335593")
 
     add_index :admin_users, :email,                :unique => true
     add_index :admin_users, :reset_password_token, :unique => true
