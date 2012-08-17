@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  brand: MyString
+  device_id: MyString
+  manufacturer: MyString
+  model: MyString
+  product: MyString
+  serial: MyString
+  event_count: 1
+  retailer_id: MyString
+  integer: MyString
+
+two:
+  brand: MyString
+  device_id: MyString
+  manufacturer: MyString
+  model: MyString
+  product: MyString
+  serial: MyString
+  event_count: 1
+  retailer_id: MyString
+  integer: MyString

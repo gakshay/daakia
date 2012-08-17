@@ -13,6 +13,9 @@ class Retailer < ActiveRecord::Base
   validates_uniqueness_of :mobile, :allow_blank => true
   validates_numericality_of :mobile, :only_integer => true, :allow_nil  => true
   
+  has_many :machines
+  
+  
   protected
   
   def mobile_required?

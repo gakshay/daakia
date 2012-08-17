@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120817151009) do
+ActiveRecord::Schema.define(:version => 20120817151010) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -58,6 +58,23 @@ ActiveRecord::Schema.define(:version => 20120817151009) do
   end
 
   add_index "documents", ["user_id"], :name => "index_documents_on_user_id"
+
+  create_table "machines", :force => true do |t|
+    t.string   "brand"
+    t.string   "serial_number"
+    t.string   "deviceid"
+    t.string   "manufacturer"
+    t.string   "model"
+    t.string   "product"
+    t.integer  "event_count",   :default => 0
+    t.integer  "retailer_id"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+  end
+
+  add_index "machines", ["event_count"], :name => "index_machines_on_event_count"
+  add_index "machines", ["retailer_id"], :name => "index_machines_on_retailer_id"
+  add_index "machines", ["serial_number"], :name => "index_machines_on_serial_number", :unique => true
 
   create_table "retailers", :force => true do |t|
     t.string   "email",                                :default => "",  :null => false
