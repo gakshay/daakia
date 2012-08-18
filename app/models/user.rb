@@ -17,6 +17,9 @@ class User < ActiveRecord::Base
   validates_format_of :password, :with => /(^[0-9]{4,6}$)/i, :allow_blank => true, :message => "Password: Only 4-6 Numbers Allowed"
 
   before_create :filter_mobile_number, :create_email_for_user
+  
+  has_many :referrals, :class_name => "User", :foreign_key => "referee_id"
+  belongs_to :referee, :class_name => "User"
 
   def filter_mobile_number
     self.mobile = self.mobile[/\d{10}$/]  
