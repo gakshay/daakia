@@ -83,13 +83,13 @@ ActiveRecord::Schema.define(:version => 20120817184051) do
     t.string   "manufacturer"
     t.string   "model"
     t.string   "product"
-    t.integer  "event_count",   :default => 0
+    t.integer  "events_count",  :default => 0
     t.integer  "retailer_id"
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
   end
 
-  add_index "machines", ["event_count"], :name => "index_machines_on_event_count"
+  add_index "machines", ["events_count"], :name => "index_machines_on_events_count"
   add_index "machines", ["retailer_id"], :name => "index_machines_on_retailer_id"
   add_index "machines", ["serial_number"], :name => "index_machines_on_serial_number", :unique => true
 
@@ -171,6 +171,7 @@ ActiveRecord::Schema.define(:version => 20120817184051) do
     t.integer  "unread_count",                         :default => 0
     t.string   "referral_token",         :limit => 64
     t.float    "balance",                              :default => 0.0
+    t.integer  "referee_id"
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true

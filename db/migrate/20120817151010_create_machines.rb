@@ -7,12 +7,12 @@ class CreateMachines < ActiveRecord::Migration
       t.string :manufacturer
       t.string :model
       t.string :product
-      t.integer :event_count, :default => 0
+      t.integer :events_count, :default => 0
       t.integer :retailer_id
       t.timestamps
     end
     add_index :machines, :serial_number,     :unique => true
-    add_index :machines, :event_count
+    add_index :machines, :events_count
     add_index :machines, :retailer_id
   end
 end
