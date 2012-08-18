@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
   
   has_many :referrals, :class_name => "User", :foreign_key => "referee_id"
   belongs_to :referee, :class_name => "User"
+  has_many :smses, :as => :service
 
   def filter_mobile_number
     self.mobile = self.mobile[/\d{10}$/]  

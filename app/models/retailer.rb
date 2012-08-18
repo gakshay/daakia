@@ -14,7 +14,7 @@ class Retailer < ActiveRecord::Base
   validates_numericality_of :mobile, :only_integer => true, :allow_nil  => true
   
   has_many :machines
-  
+  has_many :smses, :as => :service
   
   protected
   
