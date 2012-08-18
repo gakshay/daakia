@@ -3,6 +3,7 @@ class Machine < ActiveRecord::Base
   
   validates_presence_of :serial_number
   has_many :events
+  has_many :transactions, :through => :events
   belongs_to :retailer
   
 end

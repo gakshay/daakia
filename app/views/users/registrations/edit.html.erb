@@ -26,6 +26,13 @@
   </div>
   
   <div class="control-group">
+    <%= f.label :email, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.email_field :email, :class => 'email_field' %>
+    </div>
+  </div>
+  
+  <div class="control-group">
     <%= f.label :password, :class => 'control-label' %><i>(leave blank if you don't want to change it)</i>
     <div class="controls">
       <%= f.password_field :password, :autocomplete => "off", :class => 'text_field' %>

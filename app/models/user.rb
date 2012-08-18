@@ -18,6 +18,8 @@ class User < ActiveRecord::Base
 
   before_create :filter_mobile_number, :create_email_for_user
   
+  has_many :documents
+  has_many :transactions, :through => :documents
   has_many :referrals, :class_name => "User", :foreign_key => "referee_id"
   belongs_to :referee, :class_name => "User"
   has_many :smses, :as => :service

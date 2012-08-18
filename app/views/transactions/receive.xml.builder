@@ -5,6 +5,7 @@ xml.transaction do
     xml.status("Document found Successfully")
     xml.creation_date(@transaction.created_at.to_date)
     xml.document_url(@document.doc.url(:original, false))
+    xml.cost(@event.cost)
   else
     xml.error("Document not found")
     xml.message("Two parameters required: transaction[receiver_mobile] and transaction[document_code]")

@@ -13,9 +13,9 @@ class Transaction < ActiveRecord::Base
   validates_presence_of :receiver_email, :if => :receiver_email_required?
   validates_format_of :receiver_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
 
-  #validates_presence_of :document_id
   belongs_to :document
   accepts_nested_attributes_for :document
+  
   has_many :events
   has_many :smses, :as => :service
  
@@ -48,8 +48,8 @@ class Transaction < ActiveRecord::Base
     user = User.where("mobile = ? or email = ?", self.receiver_mobile, self.receiver_email).select("id, mobile, email").first
     self.receiver_id = user.id unless user.blank?
     user.increment_unread_count unless user.blank?
-    #self.receiver_mobile = user.mobile unless user.blank?
-    #self.receiver_email = user.email unless user.blank?
+    self.receiver_mobile = user.mobile unless user.blank?
+    self.receiver_email = user.email unless user.blank?
   end
 
   def generate_document_secret
@@ -81,6 +81,31 @@ class Transaction < ActiveRecord::Base
   
   def unread?
     !self.read
+  end
+  
+  # events handling
+  
+  def send_event(serial_number = nil)
+    action = self.sender_mobile == self.receiver_mobile ? "save" : "send"
+    unless serial_number.nil?
+      machine = Machine.where("serial_number = ?", serial_number).first_or_create!
+      cost = Mail::Send::PER_PAGE_COST * self.document.pages
+      self.events.create(:machine_id => machine.id, :action => action, :user => self.sender_mobile, :cost => cost)
+    else
+      self.events.create(:action => action, :user => self.sender_mobile)
+    end
+  end
+  
+  def receive_event(user, serial_number = nil)
+    action = "receive"
+    return if user.blank?
+    unless serial_number.nil?
+      machine = Machine.where("serial_number = ?", serial_number).first_or_create!
+      cost = Mail::Receive::PER_PAGE_COST * self.document.pages
+      self.events.create(:machine_id => machine.id, :action => action, :user => user, :cost => cost)
+    else
+      self.events.create(:action => action, :user => user)
+    end
   end
 
   protected

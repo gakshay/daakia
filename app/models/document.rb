@@ -1,5 +1,5 @@
 class Document < ActiveRecord::Base
-  attr_accessible :doc, :user_id
+  attr_accessible :doc, :user_id, :pages
   has_attached_file :doc, :use_timestamp => true, :storage => :s3, :s3_credentials => S3_CREDENTIALS
   validates_attachment_presence :doc
   validates_attachment_content_type :doc, :content_type => [ 'image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'application/msword', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ], :message => "File not supported"

@@ -32,6 +32,7 @@ class TransactionsController < ApplicationController
     @transaction = Transaction.new(params[:transaction])
     respond_to do |format|
       if @transaction.save
+        @transaction.send_event(params[:serial_number])
         format.html { redirect_to(@transaction, :notice => 'Transaction was successfully created.') }
         format.xml  { render :xml => @transaction, :status => :created, :location => @transaction }
         format.json  { render :json => @transaction, :status => :created, :location => @transaction }
@@ -91,9 +92,8 @@ class TransactionsController < ApplicationController
   end
   
   def download
-    unless params[:id].blank? && params[:trarnsaction].blank?
+    unless params[:id].blank? && params[:transaction].blank?
       @transaction = Transaction.find(params[:id])
-      print @transaction.inspect
       unless @transaction.blank?
         @transaction.increment_download_count
         if (@transaction.unread? && current_user.id == @transaction.receiver_id )
@@ -101,6 +101,7 @@ class TransactionsController < ApplicationController
           current_user.decrement_unread_count
         end
         @document = @transaction.document
+        @transaction.receive_event(current_user.mobile)
         respond_to do |format|
           format.html { redirect_to URI.encode @document.doc.url(:original, false) }
         end
@@ -116,9 +117,14 @@ class TransactionsController < ApplicationController
   def receive
     unless params[:transaction].blank? 
       unless (params[:transaction][:receiver_mobile].blank? or params[:transaction][:receiver_email].blank?) and params[:transaction][:document_secret].blank?
-        @transaction = Transaction.get_document(params[:transaction][:receiver_mobile], params[:transaction][:receiver_email], params[:transaction][:document_secret]) 
+        mobile = params[:transaction][:receiver_mobile]
+        email = params[:transaction][:receiver_email]
+        secret = params[:transaction][:document_secret]
+        @transaction = Transaction.get_document(mobile, email, secret) 
         unless @transaction.blank?
           @document = @transaction.document
+          user = mobile.blank? ? email : mobile
+          @event = @transaction.receive_event(user, params[:serial_number])
           respond_to do |format|
             format.html { redirect_to URI.encode @document.doc.url(:original, false) }
             format.xml #receive.xml 
