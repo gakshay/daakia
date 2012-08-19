@@ -37,7 +37,6 @@ class TransactionsController < ApplicationController
         format.xml  { render :xml => @transaction, :status => :created, :location => @transaction }
         format.json  { render :json => @transaction, :status => :created, :location => @transaction }
       else
-        print @transaction.errors.inspect
         format.html { render :action => "new"}
         format.xml  { render :xml => @transaction.errors, :status => :unprocessable_entity }
         format.json  { render :json => @transaction.errors, :status => :unprocessable_entity }
@@ -141,14 +140,14 @@ class TransactionsController < ApplicationController
         respond_to do |format|
           @transaction = Transaction.new(params[:transaction])
           format.html { render :action =>  "receive"}
-          format.xml  
+          format.xml  { render :xml => @transaction }
          end
       end
     else
       @transaction = Transaction.new
       respond_to do |format|
         format.html # receive.html.erb
-        format.xml  
+        format.xml  { render :xml => @transaction }
       end
     end
   end

@@ -11,9 +11,7 @@
       <%= document_form.input :doc, :label => "Your File", :as => :file %>
       <%= document_form.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
     <% end%>
-    
     <br>
-    
     <%= f.button :submit, "Send Mail", :class => "btn-primary" %>
     <%= link_to "Cancel", transactions_path, :class => "btn" %>
   

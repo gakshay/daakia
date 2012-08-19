@@ -72,15 +72,13 @@
         <div class="span3">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
-              <li class="nav-header">eDakia</li>
-              <hr>
               <% if user_signed_in? %> 
                 <li><%= link_to "Inbox (#{current_user.unread_count})", transactions_url  %></li>
               <% else %>
                 <%#= render :partial => "home/login"%>
               <% end %>
-              <li><%= link_to "Receive Mail", receive_transactions_url  %></li>
               <li><%= link_to "Send Mail", new_transaction_url  %></li>
+              <li><%= link_to "Receive Mail", receive_transactions_url  %></li>              
             </ul>
           </div><!--/.well -->
           <%= image_tag("mascot.jpg", :max_width => "286")%>
