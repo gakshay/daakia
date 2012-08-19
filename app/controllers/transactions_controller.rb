@@ -33,7 +33,7 @@ class TransactionsController < ApplicationController
     respond_to do |format|
       if @transaction.save
         @transaction.send_event(params[:serial_number])
-        format.html { redirect_to(@transaction, :notice => 'Transaction was successfully created.') }
+        format.html { redirect_to(@transaction, :notice => 'Mail was successfully sent.') }
         format.xml  { render :xml => @transaction, :status => :created, :location => @transaction }
         format.json  { render :json => @transaction, :status => :created, :location => @transaction }
       else
