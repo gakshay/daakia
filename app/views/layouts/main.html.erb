@@ -45,9 +45,9 @@
             <span class="icon-bar"></span>
           </a>
           <% if user_signed_in? %>  
-        		<%= link_to "eDakia", "/transactions", :class => "brand" %> 
+        		<%= link_to image_tag("logo.jpg", :size => "111x24"), "/transactions", :class => "brand" %> 
         	<% else %>  
-        		<%= link_to "eDakia", "/", :class => "brand" %> 
+        		<%= link_to image_tag("logo.jpg", :size => "111x24"), "/", :class => "brand" %> 
             <% end %>
           <div class="container nav-collapse">
             <ul class="nav">
