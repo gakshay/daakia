@@ -67,10 +67,9 @@ ActiveRecord::Schema.define(:version => 20120818115727) do
     t.string   "user"
     t.string   "action",           :limit => 64
     t.string   "current_event_ip"
-    t.boolean  "sms_sent",                       :default => false
     t.float    "cost",                           :default => 0.0
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
   end
 
   add_index "events", ["machine_id"], :name => "index_events_on_machine_id"

@@ -1,6 +1,6 @@
 # lib/document.rb
 
-module Mail
+module Price
   module Send
     PER_PAGE_COST = 5
   end

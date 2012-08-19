@@ -22,13 +22,15 @@ class Transaction < ActiveRecord::Base
   def self.get_document(mobile, email, secure_code)
     unless (mobile.blank? or email.blank?) and secure_code.blank?
       transaction = Transaction.where("(sender_mobile = ? OR receiver_mobile = ? OR receiver_email = ?) AND document_secret = ?", mobile, mobile, email, secure_code).first
-      transaction.increment_download_count unless transaction.blank?
-      if (transaction.unread? && (transaction.receiver_mobile == mobile || transaction.receiver_email == email))
-        transaction.mark_mail_read
-        user = User.where("mobile = :mobile or email = :email", :mobile => mobile, :email => email)
-        user.first.decrement_unread_count unless user.blank? # decrement unread count for first user
+      unless transaction.blank?
+        transaction.increment_download_count 
+        if (transaction.unread? && (transaction.receiver_mobile == mobile || transaction.receiver_email == email))
+          transaction.mark_mail_read
+          user = User.where("mobile = :mobile or email = :email", :mobile => mobile, :email => email)
+          user.first.decrement_unread_count unless user.blank? # decrement unread count for first user
+        end
+        transaction 
       end
-      transaction unless transaction.blank?
     else
       record.errors.add(document_secret, "secret is wrong") if secure_code.blank?
     end
@@ -46,10 +48,12 @@ class Transaction < ActiveRecord::Base
 
   def assign_receiver
     user = User.where("mobile = ? or email = ?", self.receiver_mobile, self.receiver_email).select("id, mobile, email").first
-    self.receiver_id = user.id unless user.blank?
-    user.increment_unread_count unless user.blank?
-    self.receiver_mobile = user.mobile unless user.blank?
-    self.receiver_email = user.email unless user.blank?
+    unless user.blank?
+      self.receiver_id = user.id 
+      user.increment_unread_count 
+      self.receiver_mobile = user.mobile 
+      self.receiver_email = user.email 
+    end
   end
 
   def generate_document_secret
@@ -65,7 +69,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def send_recipient_email
-    unless self.receiver_email.blank?
+    unless self.receiver_email.blank? && self.other_domain_receiver_email?
       TransactionMailer.send_recipient_email(self).deliver
     end
   end
@@ -83,13 +87,17 @@ class Transaction < ActiveRecord::Base
     !self.read
   end
   
+  def other_domain_receiver_email?
+    self.receiver_email.match(/@edakia\.in/).nil?
+  end
+  
   # events handling
   
   def send_event(serial_number = nil)
     action = self.sender_mobile == self.receiver_mobile ? "save" : "send"
     unless serial_number.nil?
-      machine = Machine.where("serial_number = ?", serial_number).first_or_create!
-      cost = Mail::Send::PER_PAGE_COST * self.document.pages
+      machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
+      cost = Price::Send::PER_PAGE_COST * self.document.pages
       self.events.create(:machine_id => machine.id, :action => action, :user => self.sender_mobile, :cost => cost)
     else
       self.events.create(:action => action, :user => self.sender_mobile)
@@ -100,8 +108,8 @@ class Transaction < ActiveRecord::Base
     action = "receive"
     return if user.blank?
     unless serial_number.nil?
-      machine = Machine.where("serial_number = ?", serial_number).first_or_create!
-      cost = Mail::Receive::PER_PAGE_COST * self.document.pages
+      machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
+      cost = Price::Receive::PER_PAGE_COST * self.document.pages
       self.events.create(:machine_id => machine.id, :action => action, :user => user, :cost => cost)
     else
       self.events.create(:action => action, :user => user)

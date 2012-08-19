@@ -6,7 +6,6 @@ class CreateEvents < ActiveRecord::Migration
       t.string :user
       t.string :action, :limit => 64
       t.string :current_event_ip
-      t.boolean :sms_sent, :default => false
       t.float :cost, :default => 0.0
       t.timestamps
     end
