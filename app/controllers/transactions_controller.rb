@@ -37,7 +37,8 @@ class TransactionsController < ApplicationController
         format.xml  { render :xml => @transaction, :status => :created, :location => @transaction }
         format.json  { render :json => @transaction, :status => :created, :location => @transaction }
       else
-        format.html { render :action => "new" }
+        print @transaction.errors.inspect
+        format.html { render :action => "new"}
         format.xml  { render :xml => @transaction.errors, :status => :unprocessable_entity }
         format.json  { render :json => @transaction.errors, :status => :unprocessable_entity }
       end

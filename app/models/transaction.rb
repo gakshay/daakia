@@ -69,8 +69,8 @@ class Transaction < ActiveRecord::Base
   end
   
   def send_recipient_email
-    unless self.receiver_email.blank? && self.other_domain_receiver_email?
-      TransactionMailer.send_recipient_email(self).deliver
+    unless self.receiver_email.blank?
+      TransactionMailer.send_recipient_email(self).deliver if self.other_domain_receiver_email?
     end
   end
   

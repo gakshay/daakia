@@ -32,3 +32,44 @@
     <%= f.submit "Send Mail", :class => "button green" %>
   </div>
 <% end %>
+
+
+
+
+<%= form_for @transaction, :html => { :class => 'form-vertical' } do |f| %>
+  <div class="control-group">
+    <%= f.label :receiver_mobile, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :receiver_mobile, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="controls">
+    Or
+  </div>
+  <br>
+  <div class="control-group">
+    <%= f.label :receiver_email, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :receiver_email, :class => 'text_field' %>
+    </div>
+  </div>
+  <%= f.hidden_field :sender_mobile, :value => current_user.mobile %>
+  
+  <%= f.fields_for :document, @transaction.document do |document_form| %>
+    <div class="control-group">
+      <%= document_form.label :doc, :class => 'control-label' %>
+      <div class="controls">
+        <%= document_form.file_field :doc, :class => 'file_field' %>
+      </div>
+    </div>
+      <p><%#= document_form.label :doc, "Doc File" %>
+      <%#= document_form.file_field :doc %>
+      <%= document_form.hidden_field :user_id, :value => current_user.id %>
+      </p>
+  <% end %>
+
+  <div class="form-actions">
+    <%= f.submit "Send Mail", :class => 'btn btn-primary' %>
+
+  </div>
+<% end %>

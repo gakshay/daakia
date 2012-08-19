@@ -15,6 +15,7 @@ gem 'i18n', '0.6.0'
 gem "heroku"
 gem 'aws-sdk'
 gem 'curb'
+gem 'simple_form'
 
 gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
