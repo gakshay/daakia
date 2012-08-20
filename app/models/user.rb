@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :mobile, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :unread_count
+  attr_accessible :mobile, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :referee_id, :unread_count
   # attr_accessible :title, :body
   
   validates_presence_of  :mobile, :if => :mobile_required?
@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
   validates_format_of :password, :with => /(^[0-9]{4,6}$)/i, :allow_blank => true, :message => "Password: Only 4-6 Numbers Allowed"
 
   before_create :filter_mobile_number, :create_email_for_user
+  before_save :credit_referee_amount
   
   has_many :documents
   has_many :transactions, :through => :documents
@@ -38,6 +39,10 @@ class User < ActiveRecord::Base
   
   def decrement_unread_count
     User.decrement_counter(:unread_count, self.id) if self.unread_count > 0
+  end
+  
+  def credit_referee_amount
+    # logic to credit referral amount to referee
   end
   
   protected
