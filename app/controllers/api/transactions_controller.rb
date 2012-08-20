@@ -5,7 +5,7 @@ class Api::TransactionsController < TransactionsController
   protected
   
   def parse_serial_number
-    if params[:serial_number].blank? || params[:serial_number].length != 16
+    if params[:serial_number].blank? || params[:serial_number].length <= 16
       respond_with :status => :unprocessable_entity 
     end
   end
