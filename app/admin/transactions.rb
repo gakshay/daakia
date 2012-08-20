@@ -6,7 +6,7 @@ ActiveAdmin.register Transaction do
     column :sender_mobile
     column :receiver_mobile
     column :receiver_email
-    column "D/L Count", :download_count
+    column "Downloads", :download_count
     column :read
     column :created_at
     default_actions
