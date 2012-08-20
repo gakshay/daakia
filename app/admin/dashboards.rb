@@ -40,5 +40,45 @@ ActiveAdmin::Dashboards.build do
   #
   # section "Membership Summary", :if => :memberships_enabled?
   # section "Membership Summary", :if => Proc.new { current_admin_user.account.memberships.any? }
+  
+  section "All Machines" do
+    ul do
+      Machine.all.collect do |mac|
+        li link_to(mac.serial_number, admin_machine_path(mac))
+      end
+    end
+  end
+  
+  section "All Retailers" do
+    ul do
+      Retailer.all.collect do |ret|
+        li link_to(ret.mobile, admin_retailer_path(ret))
+      end
+    end
+  end
+  
+  section "Recent Mails" do
+    ul do
+      Transaction.order("created_at desc").limit(5).collect do |mail|
+        li link_to("To: #{mail.receiver_mobile} From: #{mail.sender_mobile}", admin_transaction_path(mail))
+      end
+    end
+  end
 
+  section "Recent Files" do
+    ul do
+      Document.order("doc_updated_at desc").limit(5).collect do |doc|
+        li link_to(doc.doc_file_name, admin_document_path(doc))
+      end
+    end
+  end
+  
+  section "Last Users" do
+    ul do
+      User.order("created_at desc").limit(5).collect do |user|
+        li link_to(user.mobile, admin_user_path(user))
+      end
+    end
+  end
+  
 end
