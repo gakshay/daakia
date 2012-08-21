@@ -16,13 +16,14 @@ class TransactionsController < ApplicationController
   # GET /transactions/1
   # GET /transactions/1.xml
   def show
-    @transaction = Transaction.where("id = ? and (sender_mobile = ? or receiver_mobile = ?)  ", params[:id], current_user.mobile, current_user.mobile).first
-    unless @transacion
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @transaction }
-      format.json  { render :json => @transaction }
-    end
+    @transaction = Transaction.where("id = ? and (sender_mobile = ? or receiver_mobile = ? or receiver_email = ?)  ", params[:id], current_user.mobile, current_user.mobile, current_user.email).first
+    unless @transaction.blank?
+      @document = @transaction.document
+      respond_to do |format|
+        format.html # show.html.erb
+        format.xml
+        #format.json  { render :json => @transaction }
+      end
     end
   end
   
