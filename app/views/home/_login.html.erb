@@ -1,8 +1,6 @@
-<%= form_for("user", :url => user_session_path) do |f| %>
-  <%= f.phone_field :mobile, :class => "text_field", :title => "Mobile Number", :maxlength => "13"%>
-  <%= f.password_field :password, :class => "text_field", :title => "Password", :maxlength => "6" %>
-  <%#= f.check_box :remember_me, :class => "check_box" %>
-  <%#= f.label :remember_me, :class => "control-label"%>
-  <%= f.submit 'Login', :class => "btn btn-primary" %>
+<%= form_for("user", :url => user_session_path, :class=>"form-inline") do |f| %>
+  <%= f.text_field :mobile, :class => "input-small", :placeholder => "Mobile Number", :maxlength => "13"%>
+  <%= f.password_field :password, :class => "input-mini", :maxlength => "6", :placeholder => "Password" %>
+  <%= f.submit 'Login', :class => "btn btn-danger" %>
   <%#= link_to "Forgot your password?", new_password_path('user') %>
 <% end %>
