@@ -87,7 +87,7 @@
           </div><!--/.well -->
           <%= image_tag("mascot.jpg", :max_width => "286")%>
         </div><!--/span-->
-        <div class="span9 content">
+        <div class="span9">
         <% elsif retailer_signed_in? %>
           <div class="span3">
             <div class="well sidebar-nav">
@@ -98,9 +98,9 @@
             </div><!--/.well -->
             <%= image_tag("mascot.jpg", :max_width => "286")%>
           </div><!--/span-->
-          <div class="span9 content">
+          <div class="span9">
         <% else %>
-          <div class="content">
+          <div>
         <% end%>
         
           <% unless notice.blank? %>
