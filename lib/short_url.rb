@@ -4,7 +4,7 @@ module ShortUrl
   HOST = EDAKIA['host']
   PATH = '/transactions/receive/'
   FULL_PATH = HOST + PATH
-  PARAM1 = '?transaction[mobile]='
+  PARAM1 = '?transaction[receiver_mobile]='
   PARAM2 = '&transaction[document_secret]='
   
   def self.shorten(mobile,secret)
