@@ -18,6 +18,7 @@ class Transaction < ActiveRecord::Base
   
   has_many :events
   has_many :smses, :as => :service
+  has_many :mail_urls
  
   def self.get_document(mobile, email, secure_code)
     unless (mobile.blank? or email.blank?) and secure_code.blank?
@@ -39,7 +40,7 @@ class Transaction < ActiveRecord::Base
   
   # model hooks
   before_create :assign_sender, :assign_receiver, :generate_document_secret
-  after_create :deliver_document_secret_sms, :send_recipient_email
+  after_create :generate_mail_url, :deliver_document_secret_sms, :send_recipient_email
 
   def assign_sender
     user = User.find_by_mobile(self.sender_mobile, :select => "id")
@@ -58,6 +59,14 @@ class Transaction < ActiveRecord::Base
 
   def generate_document_secret
     self.document_secret = "%06d" % rand(10**6) #Time.now.to_i.to_s(36)
+  end
+  
+  def generate_mail_url
+    if Rails.env != "development"
+      s_url = ShortUrl.shorten(self.sender_mobile, self.document_secret)
+      r_url = self.receiver_mobile.blank? ? "" : ShortUrl.shorten(self.receiver_mobile, self.document_secret)
+      self.mail_urls.create(:sender_url => s_url, :receiver_url => r_url)
+    end
   end
 
   def deliver_document_secret_sms

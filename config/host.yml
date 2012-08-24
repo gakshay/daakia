@@ -1,5 +1,5 @@
 development:
-    host: http://localhost:3000
+    host: http://dev.edakia.in
 
 staging:
     host: http://staging.edakia.in

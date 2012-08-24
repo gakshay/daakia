@@ -16,6 +16,7 @@ gem "heroku"
 gem 'aws-sdk'
 gem 'curb'
 gem 'simple_form'
+gem 'bitly'
 
 gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'

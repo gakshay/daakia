@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120818115727) do
+ActiveRecord::Schema.define(:version => 20120824114830) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -91,6 +91,14 @@ ActiveRecord::Schema.define(:version => 20120818115727) do
   add_index "machines", ["events_count"], :name => "index_machines_on_events_count"
   add_index "machines", ["retailer_id"], :name => "index_machines_on_retailer_id"
   add_index "machines", ["serial_number"], :name => "index_machines_on_serial_number", :unique => true
+
+  create_table "mail_urls", :force => true do |t|
+    t.integer  "transaction_id"
+    t.string   "sender_url",     :limit => 64
+    t.string   "receiver_url",   :limit => 64
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+  end
 
   create_table "retailers", :force => true do |t|
     t.string   "email",                                :default => "",  :null => false
