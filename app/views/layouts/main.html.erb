@@ -47,12 +47,12 @@
           </a>
           -->
           <% if user_signed_in? %>  
-        		<%= link_to image_tag("logo.jpg", :size => "139x30"), "/transactions", :class => "brand" %> 
+        		<%= link_to image_tag("logo_bright.jpg"), "/transactions", :class => "brand" %> 
         	<% else %>  
-        		<%= link_to image_tag("logo.jpg", :size => "139x30"), "/", :class => "brand" %> 
+        		<%= link_to image_tag("logo_bright.jpg"), "/", :class => "brand" %> 
           <% end %>
           <div class="container nav-collapse">
-            <ul class="nav">
+            <ul class="nav pull-right">
               <% if user_signed_in? %> 
                 <li><%#= link_to_unless current_user.first_name.blank?, current_user.first_name + " (#{current_user.unread_count}) #{number_to_phone(current_user.mobile)}", edit_user_registration_path do
                   link_to current_user.mobile + " (#{current_user.unread_count})", edit_user_registration_path 
