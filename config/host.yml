@@ -1,0 +1,8 @@
+development:
+    host: http://localhost:3000
+
+staging:
+    host: http://staging.edakia.in
+
+production:
+    host: http://edakia.in
