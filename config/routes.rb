@@ -25,6 +25,8 @@ DakiaWeb::Application.routes.draw do
     end
   end
   
+  match 'receive' => 'transactions#receive'
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
