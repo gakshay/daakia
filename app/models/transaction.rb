@@ -49,11 +49,15 @@ class Transaction < ActiveRecord::Base
 
   def assign_receiver
     user = User.where("mobile = ? or email = ?", self.receiver_mobile, self.receiver_email).select("id, mobile, email").first
-    unless user.blank?
+    if !user.blank?
       self.receiver_id = user.id 
       user.increment_unread_count 
       self.receiver_mobile = user.mobile 
-      self.receiver_email = user.email 
+      self.receiver_email = user.email   
+    elsif !self.receiver_mobile.blank?
+      self.receiver_email = nil
+    elsif !self.receiver_email.blank?
+        self.receiver_mobile = nil
     end
   end
 
