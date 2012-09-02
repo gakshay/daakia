@@ -20,7 +20,7 @@ DakiaWeb::Application.routes.draw do
   
   namespace :api do
     resources :users, :only => [:index, :show, :destroy]
-    resources :transactions, :only => [:create] do
+    resources :transactions, :only => [:create, :show] do
       get :receive, :on => :collection
     end
   end
