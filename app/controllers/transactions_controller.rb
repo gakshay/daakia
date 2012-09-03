@@ -1,6 +1,7 @@
 class TransactionsController < ApplicationController
-  before_filter :authenticate_user!, :except => "receive"
-
+  before_filter :authenticate_user!, :except => ["receive", "retailer_txn"]
+  before_filter :authenticate_retailer!, :only => "retailer_txn"
+  
   # GET /transactions
   # GET /transactions.xml
   def index
@@ -151,6 +152,15 @@ class TransactionsController < ApplicationController
         format.html # receive.html.erb
         format.xml  { render :xml => @transaction }
       end
+    end
+  end
+  
+  # retailer transactions log
+  def retailer_txn
+    @txns = current_retailer.events.order("created_at DESC")
+    respond_to do |format|
+      format.html # receive.html.erb
+      format.xml  { render :xml => @transactions }
     end
   end
 end
