@@ -34,13 +34,14 @@ class TransactionsController < ApplicationController
     respond_to do |format|
       if @transaction.save
         @transaction.send_event(params[:serial_number])
+        @document = @transaction.document
         format.html { redirect_to(@transaction, :notice => 'Mail was successfully sent.') }
-        format.xml  { render :xml => @transaction, :status => :created, :location => @transaction }
-        format.json  { render :json => @transaction, :status => :created, :location => @transaction }
+        format.xml  
+        #format.json  { render :json => @transaction, :status => :created, :location => @transaction }
       else
         format.html { render :action => "new"}
-        format.xml  { render :xml => @transaction.errors, :status => :unprocessable_entity }
-        format.json  { render :json => @transaction.errors, :status => :unprocessable_entity }
+        format.xml  
+        #format.json  { render :json => @transaction.errors, :status => :unprocessable_entity }
       end
     end
   end

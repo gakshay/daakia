@@ -40,7 +40,7 @@ class Transaction < ActiveRecord::Base
   
   # model hooks
   before_create :assign_sender, :assign_receiver, :generate_document_secret
-  after_create :generate_mail_url, :deliver_document_secret_sms, :send_recipient_email
+  after_create :deliver_document_secret_sms, :send_recipient_email # , :generate_mail_url
 
   def assign_sender
     user = User.find_by_mobile(self.sender_mobile, :select => "id")

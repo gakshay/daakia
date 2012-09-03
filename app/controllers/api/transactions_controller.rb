@@ -1,7 +1,7 @@
 class Api::TransactionsController < TransactionsController
   before_filter :parse_serial_number
   protect_from_forgery :except => [:create, :receive]
-  respond_to :xml, :json
+  respond_to :xml
   
   protected
   
