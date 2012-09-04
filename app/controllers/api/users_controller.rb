@@ -34,7 +34,11 @@ class Api::UsersController < ApplicationController
     if @user.update_attributes(params[:user])
       # Sign in the user by passing validation in case his password changed
       sign_in @user, :bypass => true
-      redirect_to root_path
+      respond_to do |format|
+        format.html { redirect_to root_path }
+        format.xml { render :xml => current_user }
+      end
+      
     else
       render "edit"
     end
