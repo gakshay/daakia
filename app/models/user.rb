@@ -7,7 +7,6 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :mobile, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :referee_id, :role_id, :unread_count
-  # attr_accessible :title, :body
   
   validates_presence_of  :mobile, :if => :mobile_required?
   validates_format_of    :mobile, :with => /(^0?[789][0-9]{9}$)|(^\+?91[789][0-9]{9}$)/i, :allow_blank => true 
