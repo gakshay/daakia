@@ -14,13 +14,22 @@ DakiaWeb::Application.routes.draw do
 
   #resources :documents
 
-  devise_for :users, :controllers => { :registrations => "registrations" }, :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }
-
+  #devise_for :users, :controllers => { :registrations => "registrations" }, :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }
+  
+  devise_for :users, :skip => [:registrations], :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }                                     
+      as :user do
+        get 'users/edit' => 'devise/registrations#edit', :as => 'edit_user_registration'    
+        put 'users' => 'devise/registrations#update', :as => 'user_registration'            
+      end
+      
+      
   get "home/index"
   root :to => "home#index"
   
   namespace :api do
-    resources :users, :only => [:index, :show, :destroy]
+    resources :users, :only => [:index, :show, :destroy, :edit] do
+      post :update_password, :on => :collection
+    end
     resources :transactions, :only => [:create, :show] do
       get :receive, :on => :collection
     end
