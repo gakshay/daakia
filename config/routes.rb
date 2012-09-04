@@ -29,6 +29,7 @@ DakiaWeb::Application.routes.draw do
   namespace :api do
     resources :users, :only => [:index, :show, :destroy, :edit] do
       post :update_password, :on => :collection
+      get :register, :on => :collection, :defaults => { :format => 'xml' }
     end
     resources :transactions, :only => [:create, :show] do
       get :receive, :on => :collection

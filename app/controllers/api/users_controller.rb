@@ -1,6 +1,6 @@
 class Api::UsersController < ApplicationController
-  before_filter :authenticate_user!
-  before_filter :find_user, :except => [:index]
+  before_filter :authenticate_user!, :except => :register
+  before_filter :find_user, :except => [:index, :register]
   
   def index
     respond_to do |format|
@@ -40,6 +40,13 @@ class Api::UsersController < ApplicationController
       end
     else
       render "edit"
+    end
+  end
+  
+  def register
+    puts params.inspect
+    respond_to do |format|
+      format.xml
     end
   end
 
