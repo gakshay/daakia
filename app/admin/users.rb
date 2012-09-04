@@ -7,6 +7,7 @@ ActiveAdmin.register User do
     column :balance
     column :last_sign_in_at
     column :sign_in_count
+    column :role_id
     default_actions
   end
   
@@ -20,6 +21,7 @@ ActiveAdmin.register User do
       f.input :password
       f.input :password_confirmation
       f.input :referee 
+      f.input :role
     end
 
     f.buttons
@@ -34,6 +36,7 @@ ActiveAdmin.register User do
       row :last_name
       row :balance
       row :referee
+      row :role
       row :sign_in_count
       row :last_sign_in_at
       row :created_at

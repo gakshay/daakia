@@ -38,7 +38,6 @@ class Api::UsersController < ApplicationController
         format.html { redirect_to root_path }
         format.xml { render :xml => current_user }
       end
-      
     else
       render "edit"
     end
