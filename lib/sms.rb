@@ -10,16 +10,62 @@ require 'curb'
 
 module SMS
   class << self
-    def registration_template(mobile,password)
-      "Hi #{mobile}, your eDakia password is #{password}. By Signing up you agree to receive messages from eDakia. Kindle ignore, if not requested"
+    def registration_success_template(password, amount, type)
+"Registration: Success
+Secret PIN: #{password}
+Balance: #{amount}/-
+Account: #{type}
+Welcome to eDakia! Do not share your Secret PIN."
     end
-  
-    def document_sender_template(receiver, secret, url)
-      "Your document has been sent to #{receiver}. Secret Code is #{secret}. #{url} (eDakia)"
+    
+    def registration_kyc_success_template(amount, type)
+"Success! You are now verified eDakia user.
+Balance: #{amount}/-
+Account: #{type}
+Welcome to eDakia!"
     end
-  
-    def document_receiver_template(sender, secret, url)
-      "Your have received a document from #{sender}. Secret Code is #{secret}. #{url} (eDakia)"
+    
+    def registration_failed_template
+      "Sorry! Your mobile numer is already registered with eDakia."
+    end
+    
+    def document_sender_success_template(cost, secret, receiver, time, amount, url)
+"Success!
+Txn Fee: #{cost}
+eDak Code: #{secret}
+Recipient: #{receiver}
+Timestamp: #{time}
+Balance: #{balance}
+Access your eDak at #{balance}"
+    end
+    
+    def document_receiver_email_registered_template(sender, secret, time, email, url)
+"New eDak received!
+From: #{sender}
+eDak Code: #{secret}
+Timestamp: #{time}
+eDak has been sent to #{email} or access at <url>"
+      
+    end
+    
+    def document_receiver_template(sender, secret, time, url)
+"New eDak received!
+From: #{sender}
+eDak Code: #{secret}
+Timestamp: #{time}
+Access your eDak at #{url}"
+    end
+    
+    def document_sender_network_failure_template
+      "Sorry! Your eDak sending failed due to network issue."
+    end
+    
+    def document_sender_format_failure_template
+      "Sorry! Your eDak sending failed. We currently do not support this file format."                                                     
+    end
+    
+    def document_sender_page_count_failure_template(count = 10)
+      "Sorry! Your eDak sending failed. Only #{count} pages are allowed per eDak"
     end
   end
 end
