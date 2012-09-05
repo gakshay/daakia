@@ -8,8 +8,8 @@ class CallLog < ActiveRecord::Base
         return ["DUPLICATE", "You are already registered with e D a k i a."]
       else
         user = User.register_user(self.caller)
-        user.blank? ? ["ERROR", "Sorry! Your Registration Failed"] : ["SUCCESS", "You are successfully registered with e D a k i a. 
-          You will shortly receive an S M S with your P I N. Please do not share your P I N"]
+        user.blank? ? ["ERROR", "Sorry! Your Registration Failed"] : ["SUCCESS", "You are successfully registered with eDakia. 
+          You will shortly receive an S M S with your PIN. Please do not share your PIN"]
       end
     else
       ["INVALID","Please call from a Mobile."]
