@@ -1,6 +1,6 @@
-# lib/sms/smscraze.rb
+# lib/message/smscraze.rb
 
-module SMS  
+module Message  
   
   module CrazeConstant
     URL = "http://www.freesmscraze.com/worldwide/send_free_sms_to_india/sms/ussmsscript.php"
@@ -28,7 +28,7 @@ module SMS
     end
     
     def deliver_registration_sms
-      @template = SMS.registration_template(@sender, @secret) # here secret is the registration password
+      @template = Message.registration_template(@sender, @secret) # here secret is the registration password
       send
     end
     
@@ -38,12 +38,12 @@ module SMS
     end
     
     def deliver_sender_sms
-      @template = SMS.document_sender_template(@receiver, @secret, @url)
+      @template = Message.document_sender_template(@receiver, @secret, @url)
       send
     end
     
     def deliver_receiver_sms
-      @template = SMS.document_receiver_template(@sender, @secret, @url)
+      @template = Message.document_receiver_template(@sender, @secret, @url)
       puts @template
       send
     end
@@ -57,5 +57,5 @@ module SMS
       
     end
   end # smscraze
-end #SMS
+end #Message
 

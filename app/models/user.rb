@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :mobile, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :referee_id, :role_id, :unread_count
+  attr_accessible :mobile, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :referee_id, :balance, :role_id, :unread_count
   
   validates_presence_of  :mobile, :if => :mobile_required?
   validates_format_of    :mobile, :with => /(^0?[789][0-9]{9}$)|(^\+?91[789][0-9]{9}$)/i, :allow_blank => true 
@@ -17,12 +17,13 @@ class User < ActiveRecord::Base
 
   before_create :filter_mobile_number, :create_email_for_user, :set_default_role
   before_save :credit_referee_amount
+  after_create :send_user_registration_sms
   
   has_many :documents
   has_many :transactions, :through => :documents
   has_many :referrals, :class_name => "User", :foreign_key => "referee_id"
   belongs_to :referee, :class_name => "User"
-  has_many :smses, :as => :service
+  has_many :smss, :as => :service
   belongs_to :role
   
   def increment_unread_count
@@ -37,6 +38,19 @@ class User < ActiveRecord::Base
     # logic to credit referral amount to referee
   end
   
+  def self.register_user(mobile)
+    unless mobile.match(/^[789][0-9]{9}$/).nil?
+      password = self.generate_password
+      user = User.create(:mobile => mobile, :password => password, :password_confirmation => password, :balance => Price::User::REGISTRATION)
+      unless user.id.blank?
+        Report.notice("user", "New user #{user.mobile} created")
+        return user
+      else
+        nil
+      end
+    end
+  end
+  
   protected
 
   def self.find_for_database_authentication(warden_conditions)
@@ -44,6 +58,8 @@ class User < ActiveRecord::Base
     mobile = conditions.delete(:mobile)
     where(conditions).where(["lower(mobile) = :value", { :value => mobile[/\d{10}$/]}]).first
   end
+  
+  private
 
   def email_required?
    false
@@ -52,9 +68,7 @@ class User < ActiveRecord::Base
   def mobile_required?
     true
   end
-  
-  private
-  
+    
   def filter_mobile_number
     self.mobile = self.mobile[/\d{10}$/]  
   end
@@ -68,6 +82,14 @@ class User < ActiveRecord::Base
       self.role = Role.find_by_name('basic')
     end
   end
-
+  
+  def self.generate_password
+    "%06d" % rand(10**6) 
+  end
+  
+  def send_user_registration_sms
+    message = Message.registration_success_template(self.password, self.balance, self.role.title)
+    self.smss.create(:receiver => self.mobile, :message => message)
+  end
 
 end

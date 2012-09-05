@@ -1,14 +1,14 @@
-# lib/sms/smscraze.rb
+# lib/message/smscraze.rb
 
-module SMS
+module Message
   URL = "http://www.waysms.com/worldwide/send_free_sms_to_india/sms/ussmsscript.php"
   
   
   class Watsms
         
     def initialize
-      print SMS::URL
-      return SMS::URL
+      print Message::URL
+      return Message::URL
     end
     
   end

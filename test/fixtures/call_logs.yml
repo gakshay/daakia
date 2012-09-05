@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  caller: MyString
+  sid: MyString
+  called_number: MyString
+  event: MyString
+  circle: MyString
+  operator: MyString
+  duration: 1
+
+two:
+  caller: MyString
+  sid: MyString
+  called_number: MyString
+  event: MyString
+  circle: MyString
+  operator: MyString
+  duration: 1

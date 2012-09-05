@@ -4,11 +4,11 @@ require 'net/http'
 require 'net/https'
 require 'json'
 require 'uri'
-require 'sms/smscraze'
-require 'sms/waysms'
+require 'message/smscraze'
+require 'message/waysms'
 require 'curb'
 
-module SMS
+module Message
   class << self
     def registration_success_template(password, amount, type)
 "Registration: Success

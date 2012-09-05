@@ -3,6 +3,7 @@
 module Price
   module User
     REFERRAL = 5
+    REGISTRATION = 10
   end
   
   module Send

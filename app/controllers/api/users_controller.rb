@@ -44,9 +44,21 @@ class Api::UsersController < ApplicationController
   end
   
   def register
-    puts params.inspect
-    respond_to do |format|
-      format.xml
+    if !params['sid'].blank? && !params['event'].blank?
+      if params['event'] = "NewCall"
+        mobile = params['cid']
+        @call_log = CallLog.create(:caller => mobile, :sid => params['sid'], :event => "register", :called_number => params['called_number'], :operator => params['operator'], :circle => params['circle'] )
+        @status, @message = @call_log.register_user
+      elsif params['event'] = "Disconnect"
+        @call_log = CallLog.find_by_sid(params['sid'])
+        unless @call_log.blank?
+          @call_log.duration = params['total_call_duration']
+          @call_log.save
+        end
+      end
+      respond_to do |format|
+        format.xml
+      end
     end
   end
 

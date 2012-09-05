@@ -24,4 +24,8 @@ class Report < ActiveRecord::Base
   def self.critical(type,message)
     Report.create(:category => type, :message => message, :severity => "CRITICAL")
   end
+  
+  def self.alert(type,message)
+    Report.create(:category => type, :message => message, :severity => "ALERT")
+  end
 end
