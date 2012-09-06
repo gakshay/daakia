@@ -12,7 +12,7 @@ class CallLog < ActiveRecord::Base
           You will shortly receive an S M S with your PIN. Please do not share your PIN"]
       end
     else
-      ["INVALID","Please call from a Mobile."]
+      ["INVALID","Invalid! Please call from Mobile Number."]
     end
   end
   
