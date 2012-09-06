@@ -9,4 +9,16 @@ class Document < ActiveRecord::Base
   belongs_to :user
   has_many :transactions
   
+  after_create :update_new_user_account_type
+  
+  private 
+  
+  # update the user account type(role) after first transaction
+  def update_new_user_account_type
+    if ((self.user.role.nil?) or (self.user.role.name == "basic"))
+      self.user.role = Role.find_by_name("registered")
+      self.user.save
+    end
+  end
+  
 end
