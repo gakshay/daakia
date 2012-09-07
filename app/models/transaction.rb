@@ -19,6 +19,8 @@ class Transaction < ActiveRecord::Base
   has_many :events
   has_many :smses, :as => :service
   has_many :mail_urls
+  
+  after_create :update_document_page_count
  
   def self.get_document(mobile, email, secure_code)
     unless (mobile.blank? or email.blank?) and secure_code.blank?
@@ -138,4 +140,37 @@ class Transaction < ActiveRecord::Base
   def receiver_email_required?
     self.receiver_mobile.blank?
   end
+  
+  private
+  
+  def update_document_page_count
+    formats = %w(application/vnd.openxmlformats-officedocument.presentationml.presentation 
+    application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    application/msword
+    )
+    if self.document.doc.content_type == "application/pdf"
+      require 'open-uri' unless defined?(OpenURI)
+      begin
+        io = open(self.document.doc.url(:original, false))
+        reader = PDF::Reader.new(io)
+        self.document.pages = reader.page_count
+        self.document.save
+      rescue => ex
+        Report.error("document", "PDF Page count failed #{ex}")
+      end  
+    elsif formats.include?(self.document.doc.content_type)
+      begin
+        yomu = Yomu.new(self.document.doc.url(:original, false))
+        metadata = yomu.metadata
+        unless metadata['xmpTPg:NPages'].blank?
+          self.document.pages = metadata['xmpTPg:NPages']
+          self.document.save
+        end
+      rescue => ex
+        Report.error("document", "Yomu Page count failed #{ex}")
+      end
+    end  
+  end
+  
+  
 end

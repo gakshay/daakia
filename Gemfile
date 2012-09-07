@@ -17,6 +17,8 @@ gem 'aws-sdk'
 gem 'curb'
 gem 'simple_form'
 gem 'bitly'
+gem 'pdf-reader'
+gem 'yomu', '0.1.1'
 
 gem 'activeadmin'
 gem "meta_search",    '>= 1.1.0.pre'
@@ -50,7 +52,7 @@ end
 # gem 'jbuilder'
 
 # Use unicorn as the app server
-# gem 'unicorn'
+gem 'unicorn'
 
 # Deploy with Capistrano
 # gem 'capistrano'
