@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  transaction_id: 1
+  sender_url: MyString
+  receiver_url: MyString
+
+two:
+  transaction_id: 1
+  sender_url: MyString
+  receiver_url: MyString

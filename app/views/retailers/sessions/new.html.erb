@@ -1,0 +1,14 @@
+<h2>Retailer Login</h2>
+<hr>
+<%= simple_form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :class => 'form-vertical' }) do |f| %>
+  <%= f.input :mobile, :label => "Your mobile"%>
+  <%= f.input :password, :input_html => { :maxlength => 6 }%>
+  
+  <% if devise_mapping.rememberable? -%>
+    <%= f.input :remember_me, :as => :boolean %>
+  <% end %>
+
+  <%= f.button :submit, "Retailer Login", :class => "btn-primary"  %></div>
+<% end %>
+
+<%= render "devise/shared/links" %>

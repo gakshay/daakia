@@ -1,38 +1,18 @@
-<%= form_for @transaction, :html => { :class => 'form-horizontal' } do |f| %>
-  <div class="control-group">
-    <%= f.label :receiver_mobile, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :receiver_mobile, :class => 'text_field' %>
-    </div>
-  </div>
-  <div class="controls">
-    Or
-  </div>
-  <br>
-  <div class="control-group">
-    <%= f.label :receiver_email, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :receiver_email, :class => 'text_field' %>
-    </div>
-  </div>
-  <%= f.hidden_field :sender_mobile, :value => current_user.mobile %>
+<%= simple_form_for @transaction, :html => { :multipart => true, :class => 'form-vertical' } do |f| %>
+    <%= f.input :receiver_mobile, :label => 'Receiver Mobile' %>
+    <p>Or</p>
+    <br>
+    <%= f.input :receiver_email, :label => 'Receiver Email', :placeholder => 'user@domain.com' %>
+    <%= f.input :sender_mobile, :as => :hidden, :input_html => { :value => current_user.mobile } %>
+    
+    <%= f.simple_fields_for :document, @transaction.document do |document_form| %>
+      <%= document_form.error :doc_content_type, :class => "alert alert-error" %>
+      <%= document_form.error :doc_file_size, :class => "alert alert-error" %>
+      <%= document_form.input :doc, :label => "Your File", :as => :file %>
+      <%= document_form.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
+    <% end%>
+    <br>
+    <%= f.button :submit, "Send Mail", :class => "btn-primary" %>
+    <%= link_to "Cancel", transactions_path, :class => "btn" %>
   
-  <%= f.fields_for :document, @transaction.document do |document_form| %>
-    <div class="control-group">
-      <%= document_form.label :doc, :class => 'control-label' %>
-      <div class="controls">
-        <%= document_form.file_field :doc, :class => 'file_field' %>
-      </div>
-    </div>
-      <p><%#= document_form.label :doc, "Doc File" %>
-      <%#= document_form.file_field :doc %>
-      <%= document_form.hidden_field :user_id, :value => current_user.id %>
-      </p>
-  <% end %>
-
-  <div class="form-actions">
-    <%= f.submit "Send Mail", :class => 'btn btn-primary' %>
-    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
-                transactions_path, :class => 'btn' %>
-  </div>
 <% end %>

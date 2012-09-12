@@ -1,0 +1,8 @@
+development:
+    host: http://dev.edakia.in
+
+staging:
+    host: http://staging.edakia.in
+
+production:
+    host: http://edakia.in

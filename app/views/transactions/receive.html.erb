@@ -1,6 +1,6 @@
 <h1>Receive Mail</h1>
 
-<%= form_for(@transaction, :url => receive_transactions_path,  :html => {:method => :get}) do |f| %>
+<%= form_for(@transaction, :url => receive_transactions_path,  :html => {:method => :get, :class => "form-vertical"}) do |f| %>
   <% if @transaction.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@transaction.errors.count, "error") %> prohibited to retreive Document</h2>
@@ -32,7 +32,7 @@
   <div class="control-group">
     <%= f.label :document_secret, :class => 'control-label' %>
     <div class="controls">
-      <%= f.text_field :document_secret, :class => 'text_field' %>
+      <%= f.text_field :document_secret, :class => 'text_field', :maxlength => 6 %>
     </div>
   </div>
 
@@ -42,5 +42,5 @@
 <% end %>
 
 <% if !current_user %>
-<%= link_to 'Login', new_user_session_url %> | <%= link_to 'Register', new_user_registration_url %>
+  <%= link_to 'Login', new_user_session_url %> | <%= link_to 'Register', new_user_registration_url %>
 <% end%>

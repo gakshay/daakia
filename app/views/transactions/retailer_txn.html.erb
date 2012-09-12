@@ -1,0 +1,35 @@
+<h1>Total Transactions: <%= @txns.size %></h1>
+
+<br>
+<%- model_class = Event -%>
+            
+<table class="table table-striped">  
+  <thead>
+    <tr>
+      <th>S.No.</th>
+      <th><%= model_class.human_attribute_name(:user) %></th>
+      <th><%= model_class.human_attribute_name(:action) %></th>
+      <th><%= model_class.human_attribute_name(:cost) %></th>
+      <th><%= model_class.human_attribute_name(:created_at) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @txns.each_with_index do |txn, i| %>
+      <tr>
+        <td><%= i+1 %></td>
+        <td><%= txn.user %></td>
+        <td><%= txn.action %></td>
+        <td><%= txn.cost %></td>
+        <td><%#=l transaction.created_at %>
+          <% if txn.created_at.to_date == Date.today  %>
+            <%= txn.created_at.strftime("%I:%M %p")     %>
+          <% else %>
+            <%= txn.created_at.strftime("%d-%b-%Y %I:%M") %>
+          <% end   %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+

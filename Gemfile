@@ -14,6 +14,14 @@ gem "paperclip"
 gem 'i18n', '0.6.0'
 gem "heroku"
 gem 'aws-sdk'
+gem 'curb'
+gem 'simple_form'
+gem 'bitly'
+gem 'pdf-reader'
+gem 'yomu', '0.1.1'
+
+gem 'activeadmin'
+gem "meta_search",    '>= 1.1.0.pre'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -28,6 +36,7 @@ end
 
 group :development do
   gem 'mysql2'
+  gem 'rails-erd'
 end
 
 group :production do 
@@ -43,7 +52,7 @@ end
 # gem 'jbuilder'
 
 # Use unicorn as the app server
-# gem 'unicorn'
+gem 'unicorn'
 
 # Deploy with Capistrano
 # gem 'capistrano'

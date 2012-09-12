@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  type: 
+  severity: MyString
+  message: MyText
+
+two:
+  type: 
+  severity: MyString
+  message: MyText

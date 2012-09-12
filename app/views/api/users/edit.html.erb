@@ -1,0 +1,17 @@
+<h1>Change your password </h1>
+<hr>
+<%= form_for(:user, :url => { :controller => "api/users", :action => "update_password" } ) do |f| %>
+  
+
+  <div class="field">
+    <%= f.label :password, "Password" %><br />
+    <%= f.password_field :password, :autocomplete => "off"  %>
+  </div>
+  <div class="field">
+    <%= f.label :password_confirmation %><br />
+    <%= f.password_field :password_confirmation %>
+  </div>
+  <div class="action_container">
+    <%= f.submit "Save Password", :class => "btn btn-primary" %>
+  </div>
+<% end %>
