@@ -62,7 +62,7 @@
               <% else %>
                 <li><%= render :partial => "home/login"%></li>
                 <li><%#= link_to "Login", new_user_session_url  %></li>
-                <li><%#= link_to "Register", new_user_registration_url  %></li>
+                <li><%= link_to "Register", new_user_registration_url  %></li>
                 <li><%= link_to "Receive Mail", "/receive"  %></li>
               <% end %>
             </ul>

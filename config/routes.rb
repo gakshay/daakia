@@ -14,14 +14,14 @@ DakiaWeb::Application.routes.draw do
 
   #resources :documents
 
-  #devise_for :users, :controllers => { :registrations => "registrations" }, :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }
-  
+  devise_for :users, :controllers => { :registrations => "registrations" }, :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }
+=begin  
   devise_for :users, :skip => [:registrations], :path_names => { :sign_in => 'login', :sign_out => 'logout', :sign_up => 'register' }                                     
       as :user do
         get 'users/edit' => 'devise/registrations#edit', :as => 'edit_user_registration'    
         put 'users' => 'devise/registrations#update', :as => 'user_registration'            
       end
-      
+=end     
       
   get "home/index"
   root :to => "home#index"
