@@ -9,7 +9,7 @@ class Document < ActiveRecord::Base
   }
   validates_attachment_presence :doc
   validates_attachment_content_type :doc, :content_type => [ 'image/jpg', 'image/jpeg', 'image/png', 
-    'image/gif', 'text/html', 'text/plain', 'application/msword', 'application/pdf', 
+    'image/gif', 'text/plain', 'application/msword', 'application/pdf', 
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-powerpoint', 
     'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-excel', 
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ], :message => "File format not supported"

@@ -147,6 +147,7 @@ class Transaction < ActiveRecord::Base
     formats = %w(application/vnd.openxmlformats-officedocument.presentationml.presentation 
     application/vnd.openxmlformats-officedocument.wordprocessingml.document
     application/msword
+    application/vnd.ms-powerpoint
     )
     if self.document.doc.content_type == "application/pdf"
       require 'open-uri' unless defined?(OpenURI)
