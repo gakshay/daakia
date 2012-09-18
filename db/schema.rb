@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120905072057) do
+ActiveRecord::Schema.define(:version => 20120918125633) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -164,10 +164,15 @@ ActiveRecord::Schema.define(:version => 20120905072057) do
     t.string   "message"
     t.integer  "service_id"
     t.string   "service_type"
-    t.boolean  "delivered",    :default => false
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.boolean  "delivered",                   :default => false
+    t.datetime "created_at",                                     :null => false
+    t.datetime "updated_at",                                     :null => false
+    t.string   "messageid"
+    t.datetime "delivery_time"
+    t.string   "status_code",   :limit => 64
   end
+
+  add_index "sms", ["messageid"], :name => "index_sms_on_messageid"
 
   create_table "transactions", :force => true do |t|
     t.integer  "document_id"

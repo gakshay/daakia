@@ -4,8 +4,8 @@ require 'net/http'
 require 'net/https'
 require 'json'
 require 'uri'
-require 'message/smscraze'
-require 'message/waysms'
+#require 'message/smscraze'
+require 'message/mobme'
 require 'curb'
 
 module Message
