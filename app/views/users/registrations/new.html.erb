@@ -1,6 +1,8 @@
 <h2>eDakia Registration</h2>
 <hr>
-
+<div class="span4">
+  <%= image_tag("mascot.jpg", :max_width => "286")%>
+</div><!--/span-->
 <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
   <%#= devise_error_messages! %>
 
@@ -27,5 +29,7 @@
 
   <div><%= f.submit "Register", :class => "blue button" %></div>
 <% end %>
-
-<%= render "devise/shared/links" %>
+<br>
+<br>
+<br>
+<%#= render "devise/shared/links" %>
