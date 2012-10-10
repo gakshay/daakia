@@ -31,7 +31,7 @@ module Message
       url += "&#{Message::MobmeConstant::PASSWORD}"
       url += "&#{Message::MobmeConstant::RECEIVER}=#{@receiver}"
       url += "&#{Message::MobmeConstant::MESSAGE}=#{@template}"
-      url
+      puts url
     end
     
     def send
