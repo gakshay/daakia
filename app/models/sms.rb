@@ -9,7 +9,7 @@ class Sms < ActiveRecord::Base
   
   def deliver_sms
     sms = Message::Mobme.new(self.receiver, self.message)
-    self.status_code = sms.send
+    self.status_code = "402" #sms.send
   end
   
   def update_status_code

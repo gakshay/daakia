@@ -39,12 +39,12 @@ module Message
     def send
       c = Curl::Easy.perform(@url)
       puts c.body_str
-      c = Curl::Easy.new(@url) do |curl| 
-        curl.headers["User-Agent"] = Message::MobmeConstant::USERAGENT
-        curl.verbose = true
-      end
-      c.perform
-      puts c.body_str
+      # c = Curl::Easy.new(@url) do |curl| 
+      #         curl.headers["User-Agent"] = Message::MobmeConstant::USERAGENT
+      #         curl.verbose = true
+      #       end
+      #       c.perform
+      #       puts c.body_str
     end
   end # Mobme
 end #Message
