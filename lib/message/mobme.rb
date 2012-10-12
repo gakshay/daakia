@@ -17,11 +17,12 @@ module Message
   end
   
   class Mobme
-    attr_accessor :receiver, :template
+    attr_accessor :receiver, :template, :url
     
     def initialize(receiver, template)
       raise Message::MobmeServiceError, "Receiver not provided." unless (@receiver = receiver)
       raise Message::MobmeServiceError, "Message template not provided." unless (@template = template)
+      url
     end
     
     def url
@@ -31,11 +32,14 @@ module Message
       url += "&#{Message::MobmeConstant::PASSWORD}"
       url += "&#{Message::MobmeConstant::RECEIVER}=#{@receiver}"
       url += "&#{Message::MobmeConstant::MESSAGE}=#{@template}"
+      @url = url
       puts url
     end
     
     def send
-      c = Curl::Easy.new(self.url) do |curl| 
+      c = Curl::Easy.perform(@url)
+      puts c.body_str
+      c = Curl::Easy.new(@url) do |curl| 
         curl.headers["User-Agent"] = Message::MobmeConstant::USERAGENT
         curl.verbose = true
       end

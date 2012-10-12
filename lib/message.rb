@@ -29,31 +29,30 @@ Welcome to eDakia!"
       "Sorry! Your mobile numer is already registered with eDakia."
     end
     
-    def document_sender_success_template(cost, secret, receiver, time, amount, url)
+    def document_sender_success_template(cost, secret, receiver, time, balance, url=nil)
 "Success!
 Txn Fee: #{cost}
 eDak Code: #{secret}
 Recipient: #{receiver}
 Timestamp: #{time}
 Balance: #{balance}
-Access your eDak at #{balance}"
+Access your eDak at #{EDAKIA['host']}/receive"
     end
     
-    def document_receiver_email_registered_template(sender, secret, time, email, url)
+    def document_receiver_email_registered_template(sender, secret, time, email, url=nil)
 "New eDak received!
 From: #{sender}
 eDak Code: #{secret}
 Timestamp: #{time}
-eDak has been sent to #{email} or access at <url>"
-      
+eDak has been sent to #{email} or access at #{EDAKIA['host']}/receive"
     end
     
-    def document_receiver_template(sender, secret, time, url)
+    def document_receiver_template(sender, secret, time, url=nil)
 "New eDak received!
 From: #{sender}
 eDak Code: #{secret}
 Timestamp: #{time}
-Access your eDak at #{url}"
+Access your eDak at #{EDAKIA['host']}/receive"
     end
     
     def document_sender_network_failure_template
