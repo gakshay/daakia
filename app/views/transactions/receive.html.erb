@@ -15,19 +15,27 @@
 
   <hr>
   <br>
-  <div class="control-group">
+  
+  <div>
+  <div class="control-group" id="receiver_mobile">
     <%= f.label :receiver_mobile, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :receiver_mobile, :class => 'text_field' %>
+    <div class="controls left">
+      <%= f.text_field :receiver_mobile, :class => 'text_field', :placeholder => '98xxxxxx00' %>
     </div>
   </div>
-  <p>Or</p>
-  <div class="control-group">
+  
+  <div class="control-group" id="receiver_email" style="display:none;">
     <%= f.label :receiver_email, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :receiver_email, :class => 'text_field' %>
+    <div class="controls left">
+      <%= f.text_field :receiver_email, :class => 'text_field', :placeholder => 'user@domain.com' %>
     </div>
   </div>
+  
+  <div class="left" style="margin: -5px 0 0 20px;">
+    <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
+  </div>
+  </div>
+  <div class="clear"></div>
   
   <div class="control-group">
     <%= f.label :document_secret, :class => 'control-label' %>
@@ -37,7 +45,7 @@
   </div>
 
   <div class="actions">
-    <%= f.submit "Receive Mail", :class => "btn btn-primary" %>
+    <%= f.submit "Receive Mail", :class => "btn-large btn-primary" %>
   </div>
 <% end %>
 
