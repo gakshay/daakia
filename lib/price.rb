@@ -7,7 +7,8 @@ module Price
   end
   
   module Send
-    PER_PAGE_COST = 10
+    PER_PAGE_COST = 5
+    SINGLE_PAGE_COST = 10
   end
   
   module Receive

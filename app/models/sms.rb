@@ -10,11 +10,11 @@ class Sms < ActiveRecord::Base
   def deliver_sms
     sms = Message::Mobme.new(self.receiver, self.message)
     self.status_code = sms.send unless Rails.env == "development"
-    sleep(3)
+    sleep(2)
   end
   
   def update_status_code
-    self.update_attributes(:status_code => self.status_code)
+    self.update_attributes(:status_code => self.status_code) unless self.status_code.blank?
   end
   
 end

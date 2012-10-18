@@ -2,7 +2,7 @@ class Transaction < ActiveRecord::Base
   
   default_scope {where(:active => true)}
   attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active, :read
-  attr_accessor :serial_number
+  attr_accessor :serial_number, :cost
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
   validates_format_of :sender_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
@@ -67,7 +67,7 @@ class Transaction < ActiveRecord::Base
     action = self.sender_mobile == self.receiver_mobile ? "save" : "send"
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
-      cost = Price::Send::PER_PAGE_COST * self.document.pages
+      cost = self.cost #Price::Send::PER_PAGE_COST * self.document.pages
       self.events.create(:machine_id => machine.id, :action => action, :user => self.sender_mobile, :cost => cost)
     else
       self.events.create(:action => action, :user => self.sender_mobile)
@@ -84,6 +84,26 @@ class Transaction < ActiveRecord::Base
     else
       self.events.create(:action => action, :user => user)
     end
+  end
+  
+  def txn_cost
+    if self.document.pages == 1
+      self.cost =  Price::Send::SINGLE_PAGE_COST
+    else
+      self.cost = Price::Send::PER_PAGE_COST * self.document.pages
+    end
+    user = User.where("id = ?", self.sender_id).select("id, mobile, balance").first
+    if user.balance > 0.0
+      if user.balance >= self.cost
+        user.balance = user.balance - self.cost
+        self.cost = 0
+      else
+        self.cost = self.cost - user.balance
+        user.balance = 0
+      end
+      user.save!
+    end
+    self.cost
   end
   
   protected
@@ -133,9 +153,9 @@ class Transaction < ActiveRecord::Base
     # code to send sms to sender and receiver
     receiver = self.receiver_mobile.blank? ? self.receiver_email : self.receiver_mobile
     time = self.created_at.strftime("%d-%b-%Y %I:%M")
+    cost = self.serial_number.blank? ? 0 : self.txn_cost
     sender = User.find_by_mobile(self.sender_mobile, :select => "id, balance")
     balance = sender.balance
-    cost = self.serial_number.blank? ? 0 : (Price::Send::PER_PAGE_COST * self.document.pages)
     sender_template = Message.document_sender_success_template(cost, self.document_secret, receiver, time, balance)
     unless self.receiver_mobile.blank?
       if self.other_domain_receiver_email?
@@ -143,8 +163,10 @@ class Transaction < ActiveRecord::Base
       else
         receiver_template = Message.document_receiver_template(self.sender_mobile, self.document_secret, time)
       end
+      #deliver receiver sms
       self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
     end
+    # deliver sender sms
     self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
   end
   
