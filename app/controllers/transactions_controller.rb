@@ -32,6 +32,7 @@ class TransactionsController < ApplicationController
   # POST /transactions.xml
   def create
     @transaction = Transaction.new(params[:transaction])
+    @transaction.serial_number = params[:serial_number] unless params[:serial_number].blank?
     respond_to do |format|
       if @transaction.save
         @transaction.send_event(params[:serial_number])

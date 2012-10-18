@@ -10,9 +10,13 @@ xml.transaction do
     xml.document_url(@document.doc.url(:original, false))
     xml.cost(@transaction.events.where("action = ? or action = ?","send", "save").first.cost)
   else
-    xml.error("eDak Not sent")
-    @transaction.errors.full_messages.each do |err|
-      xml.message(err)
+    xml.error("eDak can not be sent")
+    if @transaction
+      @transaction.errors.full_messages.each do |err|
+        xml.message(err)
+      end
+    else
+      xml.message("Serial number is required")
     end
   end
 end

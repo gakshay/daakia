@@ -2,6 +2,7 @@ class Transaction < ActiveRecord::Base
   
   default_scope {where(:active => true)}
   attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active, :read
+  attr_accessor :serial_number
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
   validates_format_of :sender_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
@@ -134,7 +135,7 @@ class Transaction < ActiveRecord::Base
     time = self.created_at.strftime("%d-%b-%Y %I:%M")
     sender = User.find_by_mobile(self.sender_mobile, :select => "id, balance")
     balance = sender.balance
-    cost = Price::Send::PER_PAGE_COST * self.document.pages
+    cost = self.serial_number.blank? ? 0 : (Price::Send::PER_PAGE_COST * self.document.pages)
     sender_template = Message.document_sender_success_template(cost, self.document_secret, receiver, time, balance)
     unless self.receiver_mobile.blank?
       if self.other_domain_receiver_email?
