@@ -10,6 +10,6 @@ xml.transaction do
     xml.cost(@event.cost)
   else
     xml.error("Document not found")
-    xml.message("Two parameters required: transaction[receiver_mobile] and transaction[document_code]")
+    xml.message("Two parameters required: transaction[receiver_mobile] and transaction[document_secret]")
   end
 end

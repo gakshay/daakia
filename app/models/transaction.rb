@@ -79,13 +79,14 @@ class Transaction < ActiveRecord::Base
     return if user.blank?
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
-      cost = Price::Receive::PER_PAGE_COST * self.document.pages
+      cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
       self.events.create(:machine_id => machine.id, :action => action, :user => user, :cost => cost)
     else
       self.events.create(:action => action, :user => user)
     end
   end
   
+  # mail sending cost to the eDakia App user
   def txn_cost
     if self.document.pages == 1
       self.cost =  Price::Send::SINGLE_PAGE_COST
@@ -93,7 +94,7 @@ class Transaction < ActiveRecord::Base
       self.cost = Price::Send::PER_PAGE_COST * self.document.pages
     end
     user = User.where("id = ?", self.sender_id).select("id, mobile, balance").first
-    if user.balance > 0.0
+    if (user && user.balance > 0.0)
       if user.balance >= self.cost
         user.balance = user.balance - self.cost
         self.cost = 0
@@ -104,6 +105,23 @@ class Transaction < ActiveRecord::Base
       user.save!
     end
     self.cost
+  end
+  
+  # receive transaction cost to eDakia app user
+  def receive_txn_cost(user)
+    user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
+    cost = Price::Receive::PER_PAGE_COST * self.document.pages
+    if (user && user.balance > 0.0)
+      if user.balance >= cost
+        user.balance = user.balance - cost
+        cost = 0
+      else
+        cost = cost - user.balance
+        user.balance = 0
+      end
+      user.save!
+    end
+    cost
   end
   
   protected
