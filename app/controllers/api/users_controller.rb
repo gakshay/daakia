@@ -27,6 +27,10 @@ class Api::UsersController < ApplicationController
   end
   
   def edit
+    respond_to do |format|
+      format.html 
+      format.xml {render :xml => current_user}
+    end
   end
 
   def update_password
@@ -39,7 +43,10 @@ class Api::UsersController < ApplicationController
         format.xml { render :xml => current_user }
       end
     else
-      render "edit"
+      respond_to do |format|
+        format.html { render :action => "edit", :id => current_user.id}
+        format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
+      end
     end
   end
   
