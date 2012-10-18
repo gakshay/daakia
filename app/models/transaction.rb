@@ -57,7 +57,7 @@ class Transaction < ActiveRecord::Base
   end
   
   def other_domain_receiver_email?
-    self.receiver_email.match(/@edakia\.in/).nil?
+    self.receiver_email.match(/@edakia\.in/).nil? unless self.receiver_email.blank?
   end
   
   # events handling
@@ -136,7 +136,6 @@ class Transaction < ActiveRecord::Base
     balance = sender.balance
     cost = Price::Send::PER_PAGE_COST * self.document.pages
     sender_template = Message.document_sender_success_template(cost, self.document_secret, receiver, time, balance)
-    self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
     unless self.receiver_mobile.blank?
       if self.other_domain_receiver_email?
         receiver_template = Message.document_receiver_email_registered_template(self.sender_mobile, self.document_secret, time, self.receiver_email)
@@ -145,6 +144,7 @@ class Transaction < ActiveRecord::Base
       end
       self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
     end
+    self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
   end
   
   def send_recipient_email

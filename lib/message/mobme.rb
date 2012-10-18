@@ -32,13 +32,14 @@ module Message
       url += "&#{Message::MobmeConstant::PASSWORD}"
       url += "&#{Message::MobmeConstant::RECEIVER}=#{@receiver}"
       url += "&#{Message::MobmeConstant::MESSAGE}=#{@template}"
-      @url = url
+      @url = URI.encode(url)
       puts url
     end
     
     def send
       c = Curl::Easy.perform(@url)
       puts c.body_str
+      c.body_str
       # c = Curl::Easy.new(@url) do |curl| 
       #         curl.headers["User-Agent"] = Message::MobmeConstant::USERAGENT
       #         curl.verbose = true

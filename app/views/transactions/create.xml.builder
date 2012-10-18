@@ -11,6 +11,8 @@ xml.transaction do
     xml.cost(@transaction.events.where("action = ? or action = ?","send", "save").first.cost)
   else
     xml.error("eDak Not sent")
-    xml.message("eDak sending failed. Either file type or size not supported")
+    @transaction.errors.full_messages.each do |err|
+      xml.message(err)
+    end
   end
 end
