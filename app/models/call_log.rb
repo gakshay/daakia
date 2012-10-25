@@ -5,10 +5,10 @@ class CallLog < ActiveRecord::Base
   def register_user
     if correct?
       if registered?
-        return ["DUPLICATE", "You are already registered with e Daakiya."]
+        return ["DUPLICATE", "You are already registered with e Daa kiya"]
       else
         user = User.register_user(self.caller)
-        user.blank? ? ["ERROR", "Sorry! Your Registration Failed"] : ["SUCCESS", "You are successfully registered with e Daakiya. 
+        user.blank? ? ["ERROR", "Sorry! Your Registration Failed"] : ["SUCCESS", "You are successfully registered with e Daa kiya. 
           You will shortly receive an S M S with your PIN. Please do not share your PIN"]
       end
     else

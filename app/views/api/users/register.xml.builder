@@ -17,9 +17,8 @@ xml.response do
       xml.playtext(@message)
     when "SUCCESS"
       xml.playtext(@message)
-    else
-      xml.playtext("Thank you for calling")
     end
   end
+  xml.playtext("Thank you for calling")
   xml.hangup
 end
