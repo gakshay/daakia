@@ -55,7 +55,14 @@ class Api::UsersController < ApplicationController
       if params['event'] == "NewCall"
         mobile = params['cid']
         @call_log = CallLog.create(:caller => mobile, :sid => params['sid'], :event => "register", :called_number => params['called_number'], :operator => params['operator'], :circle => params['circle'] )
-        @status, @message = @call_log.register_user
+        @status, @message = ["NEW CALL", "Welcome to e Daakiya"]
+      elsif params['event'] == "GotDTMF"
+        if params['data'] == "1"
+          @call_log = CallLog.find_by_sid(params['sid'])
+          @status, @message = @call_log.register_user
+        else
+          @status, @message = ["INVALID INPUT", "Invalid input"]
+        end
       elsif params['event'] == "Disconnect"
         @call_log = CallLog.find_by_sid(params['sid'])
         unless @call_log.blank?

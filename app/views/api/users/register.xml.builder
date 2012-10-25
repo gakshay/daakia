@@ -1,8 +1,25 @@
 xml.instruct!
 xml.response do
-  xml.playaudio("https://s3.amazonaws.com/edakia-audio/welcome.wav")
   if @status
-    xml.playtext(@message)
+    case @status
+    when "NEW CALL"
+      xml.playtext(@message)
+      xml.collectdtmf do 
+        xml.playtext("Press 1 to Register")
+      end
+    when "DUPLICATE"
+      xml.playtext(@message)
+    when "INVALID MOBILE"
+      xml.playtext(@message)
+    when "ERROR"
+      xml.playtext(@message)
+    when "INVALID INPUT"
+      xml.playtext(@message)
+    when "SUCCESS"
+      xml.playtext(@message)
+    else
+      xml.playtext("Thank you for calling")
+    end
   end
   xml.hangup
 end
