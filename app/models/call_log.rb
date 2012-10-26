@@ -9,7 +9,7 @@ class CallLog < ActiveRecord::Base
       else
         user = User.register_user(self.caller)
         user.blank? ? ["ERROR", "Sorry! Your Registration Failed"] : ["SUCCESS", "You are successfully registered with e Daa kiya. 
-          You will shortly receive an S M S with your PIN. Please do not share your PIN"]
+          You will shortly receive, an S M S with your PIN. Please do not share your PIN"]
       end
     else
       ["INVALID MOBILE","Invalid! Please call from Mobile Number."]

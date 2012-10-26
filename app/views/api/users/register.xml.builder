@@ -6,7 +6,9 @@ xml.response do
       xml.playtext(@message)
       xml.collectdtmf do 
         xml.playtext("Press 1 to Register")
+        xml.playtext("Please wait")
       end
+      xml.playtext("Please wait")
     when "DUPLICATE"
       xml.playtext(@message)
     when "INVALID MOBILE"
