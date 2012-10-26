@@ -1,9 +1,15 @@
 <h1>Receive Mail</h1>
 
-<%= form_for(@transaction, :url => receive_transactions_path,  :html => {:method => :get, :class => "form-vertical"}) do |f| %>
+  <hr>
+  <br>
+<div class="span4 left">
+  <%= image_tag("mascot.jpg", :max_width => "200")%>
+</div>
+
+<%= form_for(@transaction, :url => receive_transactions_path,  :html => {:method => :get, :class => "form-vertical left"}) do |f| %>
   <% if @transaction.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@transaction.errors.count, "error") %> prohibited to retreive Document</h2>
+      <h2><%= pluralize(@transaction.errors.count, "error") %> prohibited to retrieve Document</h2>
 
       <ul>
       <% @transaction.errors.full_messages.each do |msg| %>
@@ -13,27 +19,25 @@
     </div>
   <% end %>
 
-  <hr>
-  <br>
   
   <div>
-  <div class="control-group" id="receiver_mobile">
-    <%= f.label :receiver_mobile, :class => 'control-label' %>
-    <div class="controls left">
-      <%= f.text_field :receiver_mobile, :class => 'text_field', :placeholder => '98xxxxxx00' %>
+    <div class="control-group" id="receiver_mobile">
+      <%= f.label :receiver_mobile, :class => 'control-label' %>
+      <div class="controls left">
+        <%= f.text_field :receiver_mobile, :class => 'text_field', :placeholder => '98xxxxxx00' %>
+      </div>
     </div>
-  </div>
   
-  <div class="control-group" id="receiver_email" style="display:none;">
-    <%= f.label :receiver_email, :class => 'control-label' %>
-    <div class="controls left">
-      <%= f.text_field :receiver_email, :class => 'text_field', :placeholder => 'user@domain.com' %>
+    <div class="control-group" id="receiver_email" style="display:none;">
+      <%= f.label :receiver_email, :class => 'control-label' %>
+      <div class="controls left">
+        <%= f.text_field :receiver_email, :class => 'text_field', :placeholder => 'user@domain.com' %>
+      </div>
     </div>
-  </div>
   
-  <div class="left" style="margin: -5px 0 0 20px;">
-    <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
-  </div>
+    <div class="right" style="">
+      <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
+    </div>
   </div>
   <div class="clear"></div>
   
@@ -49,6 +53,3 @@
   </div>
 <% end %>
 
-<% if !current_user %>
-  <%= link_to 'Login', new_user_session_url %> | <%= link_to 'Register', new_user_registration_url %>
-<% end%>
