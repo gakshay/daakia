@@ -51,6 +51,7 @@ class Api::UsersController < ApplicationController
   end
   
   def register
+    @wait = false
     if !params['sid'].blank? && !params['event'].blank?
       if params['event'] == "NewCall"
         mobile = params['cid']
@@ -59,7 +60,8 @@ class Api::UsersController < ApplicationController
       elsif params['event'] == "GotDTMF"
         if params['data'] == "1"
           @call_log = CallLog.find_by_sid(params['sid'])
-          @status, @message = @call_log.register_user
+          @wait = true
+          #@status, @message = @call_log.register_user
         else
           @status, @message = ["INVALID INPUT", "Invalid key input"]
         end
