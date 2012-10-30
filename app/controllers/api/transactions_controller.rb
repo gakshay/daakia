@@ -7,7 +7,10 @@ class Api::TransactionsController < TransactionsController
   
   def parse_serial_number
     if params[:serial_number].blank? || params[:serial_number].length <= 9
-      respond_with :status => :unprocessable_entity 
+      xml = {:errors => { :error => "Serial Number is wrong or not not provided" }}
+      respond_to do |format|
+        format.xml {render :xml => xml, :status => :unprocessable_entity}
+      end
     end
   end
 end
