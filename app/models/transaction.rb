@@ -110,7 +110,12 @@ class Transaction < ActiveRecord::Base
   # receive transaction cost to eDakia app user
   def receive_txn_cost(user)
     user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
-    cost = Price::Receive::PER_PAGE_COST * self.document.pages
+    if self.document.pages <= 5
+      cost =  Price::Receive::PER_PAGE_COST
+    else
+      cost = Price::Receive::PER_PAGE_COST * 2
+    end
+    #cost = Price::Receive::PER_PAGE_COST * self.document.pages
     if (user && user.balance > 0.0)
       if user.balance >= cost
         user.balance = user.balance - cost

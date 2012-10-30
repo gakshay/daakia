@@ -2,54 +2,31 @@
 
   <hr>
   <br>
-<div class="span4 left hidden-phone">
-  <%= image_tag("mascot.jpg", :max_width => "200")%>
-</div>
+<% if current_user.blank? %>
+  <div class="span4 left hidden-phone">
+    <%= image_tag("mascot.jpg", :max_width => "200")%>
+  </div>
+<% end%>
 
-<%= form_for(@transaction, :url => receive_transactions_path,  :html => {:method => :get, :class => "form-vertical left"}) do |f| %>
-  <% if @transaction.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@transaction.errors.count, "error") %> prohibited to retrieve Document</h2>
+<%= simple_form_for @transaction, :url => receive_transactions_url,  :html => {:method => :get, :class => "form-vertical left"} do |f| %>
 
-      <ul>
-      <% @transaction.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+    <div id="receiver_mobile">
+      <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00', :input_html => {:class => "left"}%>
     </div>
-  <% end %>
-
-  
-  <div>
-    <div class="control-group" id="receiver_mobile">
-      <%= f.label :receiver_mobile, :class => 'control-label' %>
-      <div class="controls left">
-        <%= f.text_field :receiver_mobile, :class => 'text_field', :placeholder => '98xxxxxx00' %>
-      </div>
+    <div id="receiver_email" style="display:none">
+      <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com', :input_html => {:class => "left"}%>
     </div>
-  
-    <div class="control-group" id="receiver_email" style="display:none;">
-      <%= f.label :receiver_email, :class => 'control-label' %>
-      <div class="controls left">
-        <%= f.text_field :receiver_email, :class => 'text_field', :placeholder => 'user@domain.com' %>
-      </div>
-    </div>
-  
-    <div class="right" style="">
+    
+    <div class="left" style="margin: -5px 0 0 20px;">
       <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
     </div>
-  </div>
-  <div class="clear"></div>
-  
-  <div class="control-group">
-    <%= f.label :document_secret, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :document_secret, :class => 'text_field', :maxlength => 6 %>
+    
+    <div class="clear"></div>
+    <div id="document_secret">
+      <%= f.input :document_secret, :label => 'Secret Code' %>
     </div>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Receive Mail", :class => "btn-large btn-primary" %>
-  </div>
+  
+    <%= f.button :submit, "Receive Mail", :class => "btn-large btn-primary" %>
+  
 <% end %>
 

@@ -51,6 +51,11 @@ class User < ActiveRecord::Base
     end
   end
   
+  def self.check_balance(user_credential)
+    user = User.where("mobile = ? or email = ?", user_credential, user_credential ).select("id, mobile, balance").first
+    user.blank? ? nil : user.balance
+  end
+  
   protected
 
   def self.find_for_database_authentication(warden_conditions)

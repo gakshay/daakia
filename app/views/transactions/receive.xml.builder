@@ -7,6 +7,9 @@ xml.transaction do
     xml.document_url(@document.doc.url(:original, false))
     xml.document_type(@document.doc_content_type)
     xml.document_size("#{@document.doc_file_size} B")
+    unless @balance.blank?
+      xml.balance(@balance)
+    end
     xml.cost(@event.cost)
   else
     xml.error("Document not found")

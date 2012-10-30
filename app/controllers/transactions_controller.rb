@@ -136,7 +136,7 @@ class TransactionsController < ApplicationController
         else
           respond_to do |format|
             @transaction = Transaction.new(params[:transaction])
-            format.html { render :file => "#{Rails.root}/public/404.html", :status => :not_found }
+            format.html
             format.xml
           end
         end
