@@ -38,8 +38,6 @@ class Transaction < ActiveRecord::Base
         end
         transaction 
       end
-    else
-      record.errors.add(document_secret, "secret is wrong") if secure_code.blank?
     end
   end
   

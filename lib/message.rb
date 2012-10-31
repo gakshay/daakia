@@ -31,11 +31,11 @@ Welcome to eDakia!"
     
     def document_sender_success_template(cost, secret, receiver, time, balance, url=nil)
 "Success!
-Txn Fee: #{cost}
+Txn Fee: #{cost}/-
 eDak Code: #{secret}
 Recipient: #{receiver}
 Timestamp: #{time}
-Balance: #{balance}
+Balance: #{balance}/-
 Access your eDak at #{EDAKIA['host']}/receive"
     end
     

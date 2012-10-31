@@ -5,13 +5,13 @@ class CallLog < ActiveRecord::Base
   def register_user
     if correct?
       if registered?
-        return ["DUPLICATE", "You are already registered with e Daa kiya"]
+        return "DUPLICATE"
       else
         user = User.register_user(self.caller)
-        user.blank? ? ["ERROR", "Sorry! Your Registration Failed"] : ["SUCCESS", "You are successfully registered with e Daa kiya."]
+        user.blank? ? "ERROR" : "SUCCESS"
       end
     else
-      ["INVALID MOBILE","Invalid! Please call from Mobile Number."]
+      return "INVALID MOBILE"
     end
   end
   
