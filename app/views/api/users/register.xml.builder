@@ -9,10 +9,12 @@ xml.response do
   if @status
     case @status
     when "NEW CALL"
-      xml.playtext("Welcome to e Daakiya. e-Daakia me aapka swagat hai")
+      xml.playtext("Welcome to e-Daakia. Aapka e-Daakia me swagat hai")
       xml.collectdtmf do 
-        xml.playtext("Please press 1 to register and wait for sometime")
+        #xml.playtext("Please press 1 to register and wait for sometime")
+        xml.playaudio("https://s3.amazonaws.com/edakia-audio/press_1_to_register_english_loud.wav")
         xml.playtext("Panjikaran karne k liye 1 dabaye aur pratiksha kare")
+        xml.playaudio("https://s3.amazonaws.com/edakia-audio/press_1_to_register.wav")
       end
     when "DUPLICATE"
       xml.playtext("Sorry, you are already registered. Khed hai, aap pehle se panjikarat upbhokta hai")
