@@ -13,6 +13,7 @@ module Price
   
   module Receive
     PER_PAGE_COST = 5
+    RETAILER_PER_PAGE_COST = 2
   end
   
   module Retailer

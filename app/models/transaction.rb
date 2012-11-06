@@ -66,7 +66,8 @@ class Transaction < ActiveRecord::Base
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
       cost = self.cost #Price::Send::PER_PAGE_COST * self.document.pages
-      self.retailer_txn_balance(cost, serial_number)
+      retailer = self.retailer_txn_balance(cost, serial_number)
+      self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => cost)
       self.events.create(:machine_id => machine.id, :action => action, :user => self.sender_mobile, :cost => cost)
     else
       self.events.create(:action => action, :user => self.sender_mobile)
@@ -78,8 +79,9 @@ class Transaction < ActiveRecord::Base
     return if user.blank?
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
-      cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
-      self.retailer_txn_balance(cost, serial_number)
+      cost, retailer_cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
+      retailer = self.retailer_txn_balance(retailer_cost, serial_number)
+      self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => retailer_cost)
       self.events.create(:machine_id => machine.id, :action => action, :user => user, :cost => cost)
     else
       self.events.create(:action => action, :user => user)
@@ -88,11 +90,12 @@ class Transaction < ActiveRecord::Base
   
   # mail sending cost to the eDakia App user
   def txn_cost
-    if self.document.pages == 1
-      self.cost =  Price::Send::SINGLE_PAGE_COST
-    else
-      self.cost = Price::Send::PER_PAGE_COST * self.document.pages
-    end
+    # if self.document.pages == 1
+    #   self.cost =  Price::Send::SINGLE_PAGE_COST
+    # else
+    #   self.cost = Price::Send::PER_PAGE_COST * self.document.pages
+    # end
+    self.cost = Price::Send::PER_PAGE_COST * self.document.pages
     user = User.where("id = ?", self.sender_id).select("id, mobile, balance").first
     if (user && user.balance > 0.0)
       if user.balance >= self.cost
@@ -110,12 +113,13 @@ class Transaction < ActiveRecord::Base
   # receive transaction cost to eDakia app user
   def receive_txn_cost(user)
     user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
-    if self.document.pages <= 5
-      cost =  Price::Receive::PER_PAGE_COST
-    else
-      cost = Price::Receive::PER_PAGE_COST * 2
-    end
-    #cost = Price::Receive::PER_PAGE_COST * self.document.pages
+    # if self.document.pages <= 5
+    #       cost =  Price::Receive::PER_PAGE_COST
+    #     else
+    #       cost = Price::Receive::PER_PAGE_COST * 2
+    #     end
+    cost = Price::Receive::PER_PAGE_COST * self.document.pages
+    retailer_cost = Price::Receive::RETAILER_PER_PAGE_COST * self.document.pages
     if (user && user.balance > 0.0)
       if user.balance >= cost
         user.balance = user.balance - cost
@@ -126,7 +130,7 @@ class Transaction < ActiveRecord::Base
       end
       user.save!
     end
-    cost
+    [cost, retailer_cost]
   end
   
   def retailer_txn_balance(cost, serial_number)
@@ -136,6 +140,7 @@ class Transaction < ActiveRecord::Base
       machine.retailer.save!
       Report.notice("Retailer", "#{machine.retailer.mobile} eDakia Kendra. Txn Cost: #{cost} at Machine: #{serial_number}")
     end 
+    machine.retailer
   end
   
   protected
