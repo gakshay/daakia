@@ -148,7 +148,7 @@ class TransactionsController < ApplicationController
           @event = @transaction.receive_event(user, params[:serial_number])
         else
           @transaction = Transaction.new(params[:transaction])
-          @transaction.errors.add(:base, "eDaak not found")
+          @transaction.errors.add(:base, "Your Document not found")
         end
       end
     else

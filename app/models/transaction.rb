@@ -66,6 +66,7 @@ class Transaction < ActiveRecord::Base
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
       cost = self.cost #Price::Send::PER_PAGE_COST * self.document.pages
+      self.retailer_txn_balance(cost, serial_number)
       self.events.create(:machine_id => machine.id, :action => action, :user => self.sender_mobile, :cost => cost)
     else
       self.events.create(:action => action, :user => self.sender_mobile)
@@ -78,6 +79,7 @@ class Transaction < ActiveRecord::Base
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
       cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
+      self.retailer_txn_balance(cost, serial_number)
       self.events.create(:machine_id => machine.id, :action => action, :user => user, :cost => cost)
     else
       self.events.create(:action => action, :user => user)
@@ -125,6 +127,15 @@ class Transaction < ActiveRecord::Base
       user.save!
     end
     cost
+  end
+  
+  def retailer_txn_balance(cost, serial_number)
+    machine = Machine.where("serial_number = ?", "#{serial_number}").includes(:retailer).first
+    unless machine.blank?
+      machine.retailer.balance = machine.retailer.balance - cost
+      machine.retailer.save!
+      Report.notice("Retailer", "#{machine.retailer.mobile} eDakia Kendra. Txn Cost: #{cost} at Machine: #{serial_number}")
+    end 
   end
   
   protected

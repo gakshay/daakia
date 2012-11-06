@@ -92,12 +92,12 @@ class Api::UsersController < ApplicationController
     if params[:serial_number].blank? || params[:serial_number].length <= 9
       error = {:errors => { :error => "Serial Number is wrong or not provided" }}
     else
-      machine = Machine.find_by_serial_number("#{params[:serial_number]}")
-      if machine.blank?
+      @machine = Machine.find_by_serial_number("#{params[:serial_number]}")
+      if @machine.blank?
         error = {:errors => { :error => "This eDakia machine is not registered" }} 
-      elsif machine.retailer.blank?
+      elsif @machine.retailer.blank?
         error = {:errors => { :error => "This eDakia machine is not installed at any eDakia Kendra" }}
-      elsif machine.retailer.balance < Price::Retailer::MIN_BALANCE
+      elsif @machine.retailer.balance < Price::Retailer::MIN_BALANCE
         error = {:errors => { :error => "You have insufficient funds to carry out a transaction" }} 
       end
     end
