@@ -19,13 +19,12 @@ ActiveAdmin.register Retailer do
       f.input :email
       f.input :first_name
       f.input :last_name
+      f.input :balance
       f.input :age
       f.input :address, :input_html => {:rows => 3}
       f.input :city
       f.input :state
       f.input :pincode
-      f.input :password
-      f.input :password_confirmation
     end
 
     f.buttons

@@ -4,6 +4,7 @@ ActiveAdmin.register Event do
   
   index do
     column "Machine", :machine_id
+    column "Mail", :transaction_id
     column :user
     column :action
     column :cost
