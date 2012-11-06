@@ -1,4 +1,6 @@
 ActiveAdmin.register Retailer do
+  menu :label => "Retailers"
+  
   index do
     column :first_name
     column :last_name
