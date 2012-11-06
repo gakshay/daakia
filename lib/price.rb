@@ -14,4 +14,8 @@ module Price
   module Receive
     PER_PAGE_COST = 5
   end
+  
+  module Retailer
+    MIN_BALANCE = 5
+  end
 end

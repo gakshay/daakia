@@ -1,4 +1,5 @@
 class Api::UsersController < ApplicationController
+  before_filter :parse_serial_number, :expect => :register
   before_filter :authenticate_user!, :except => :register
   before_filter :find_user, :except => [:index, :register]
   
@@ -45,7 +46,7 @@ class Api::UsersController < ApplicationController
     else
       respond_to do |format|
         format.html { render :action => "edit", :id => current_user.id}
-        format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
+        format.xml { render :xml => @user.errors } #, :status => :unprocessable_entity }
       end
     end
   end
@@ -80,8 +81,31 @@ class Api::UsersController < ApplicationController
 
 
   protected
+  
   def find_user
     @user = current_user 
   end
+  
+  
+  def parse_serial_number
+    error = {}
+    if params[:serial_number].blank? || params[:serial_number].length <= 9
+      error = {:errors => { :error => "Serial Number is wrong or not provided" }}
+    else
+      machine = Machine.find_by_serial_number("#{params[:serial_number]}")
+      if machine.blank?
+        error = {:errors => { :error => "This eDakia machine is not registered" }} 
+      elsif machine.retailer.blank?
+        error = {:errors => { :error => "This eDakia machine is not installed at any eDakia Kendra" }}
+      elsif machine.retailer.balance < Price::Retailer::MIN_BALANCE
+        error = {:errors => { :error => "You have insufficient funds to carry out a transaction" }} 
+      end
+    end
+    unless error.blank?
+      respond_to do |format|
+        format.xml {render :xml => error } #, :status => :unprocessable_entity}
+      end
+    end
+  end #parse_serial_number
 end
 

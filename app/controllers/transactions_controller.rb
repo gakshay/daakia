@@ -158,7 +158,7 @@ class TransactionsController < ApplicationController
     if !@transaction.errors.blank? or @transaction.new_record?
       respond_to do |format|
         format.html { render :action =>  "receive", :alert => "Mail Not found"}
-        format.xml {render :xml => @transaction.errors, :status => :unprocessable_entity}
+        format.xml {render :xml => @transaction.errors} #, :status => :unprocessable_entity}
       end
     else
       respond_to do |format|
