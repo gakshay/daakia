@@ -93,7 +93,7 @@ class User < ActiveRecord::Base
   end
   
   def send_user_registration_sms
-    message = Message.registration_success_template(self.password, self.balance, self.role.title)
+    message = Message.registration_success_template(self.mobile, self.password, self.balance, self.role.title)
     self.smss.create(:receiver => self.mobile, :message => message)
   end
 
