@@ -1,5 +1,5 @@
 xml.instruct!
-xml.response do
+xml.response(:filler => "yes") do
   # 
   # if @wait
   #   xml.playtext("Please wait. Kripya pratiksha kare")
