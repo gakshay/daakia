@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  before_filter :parse_serial_number, :expect => :register
+  before_filter :parse_serial_number, :except => [:register, :update_password]
   before_filter :authenticate_user!, :except => :register
   before_filter :find_user, :except => [:index, :register]
   
