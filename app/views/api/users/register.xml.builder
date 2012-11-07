@@ -20,8 +20,9 @@ xml.response(:filler => "yes") do
       #xml.playtext("Sorry, you are already registered. Khed hai, aap pehle se panjikarat upbhokta hai")
       xml.playaudio("https://s3.amazonaws.com/edakia-audio/sorry_already_registered.wav")
     when "INVALID MOBILE"
-      xml.playtext("Please call from Mobile Number")
-      xml.playtext("Kripya Mobile Number se Call kare")
+      # xml.playtext("Please call from Mobile Number")
+      # xml.playtext("Kripya Mobile Number se Call kare")
+      xml.playaudio("https://s3.amazonaws.com/edakia-audio/sorry_invalid_number.wav")
     when "ERROR"
       #xml.playtext("Sorry, not registered at this time. Khed hai, abhi panjikaran nahi kiya ja sakta")
       xml.playaudio("https://s3.amazonaws.com/edakia-audio/error_registration.wav")
@@ -29,8 +30,9 @@ xml.response(:filler => "yes") do
       #xml.playtext("Sorry, you pressed wrong number. Aapne galat number prekshit kiya hai")
       xml.playaudio("https://s3.amazonaws.com/edakia-audio/pressed_wrong_number.wav")
     when "SUCCESS"
-      xml.playtext("You are Successfully Registered, you will shorty receive an SMS with your PASSWORD. Please do not share this PASSWORD with anyone")
-      xml.playtext("Aapka Panjikaran safal hua. Ab aapko ek SMS me PASSWORD diya jaega. Kripya yeh PASSWORD kisi bhi vyakti ko na bataye")
+      # xml.playtext("You are Successfully Registered, you will shorty receive an SMS with your PASSWORD. Please do not share this PASSWORD with anyone")
+      # xml.playtext("Aapka Panjikaran safal hua. Ab aapko ek SMS me PASSWORD diya jaega. Kripya yeh PASSWORD kisi bhi vyakti ko na bataye")
+      xml.playaudio("https://s3.amazonaws.com/edakia-audio/success_register.wav")
     end
   end
   
