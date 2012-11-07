@@ -32,6 +32,7 @@ class TransactionsController < ApplicationController
   # POST /transactions.xml
   def create
     @transaction = Transaction.new(params[:transaction])
+    @transaction.serial_number = params[:serial_number] unless params[:serial_number].blank?
     respond_to do |format|
       if @transaction.save
         @transaction.send_event(params[:serial_number])
@@ -119,38 +120,50 @@ class TransactionsController < ApplicationController
   # Receive /transactions/receive
   def receive
     unless params[:transaction].blank? 
-      unless (params[:transaction][:receiver_mobile].blank? or params[:transaction][:receiver_email].blank?) and params[:transaction][:document_secret].blank?
-        mobile = params[:transaction][:receiver_mobile]
-        email = params[:transaction][:receiver_email]
-        secret = params[:transaction][:document_secret]
+      mobile = params[:transaction][:receiver_mobile]
+      email = params[:transaction][:receiver_email]
+      secret = params[:transaction][:document_secret]
+      @transaction = Transaction.new(params[:transaction])
+      if secret.blank?
+        @transaction.errors.add(:document_secret, "is required") if secret.blank?
+      elsif secret.match(/^\d{6}/).blank?
+        @transaction.errors.add(:document_secret, "Must be 6 Digit Long") 
+      end
+      
+      if email.blank? && mobile.blank?
+        @transaction.errors.add(:base, "Provide Either Mobile number or Email")
+      elsif !mobile.blank? && mobile.match(/(^[789]\d{9}$)/).blank?
+        @transaction.errors.add(:receiver_mobile, "Invalid Number")
+      elsif !email.blank? && email.match(/\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/).blank?
+        @transaction.errors.add(:receiver_email, "Invalid Address")
+      elsif (!email.blank? && !mobile.blank?)
+        @transaction.errors.add(:base, "Enter only Mobile number or Email")
+      end
+      
+      if @transaction.errors.blank?
         @transaction = Transaction.get_document(mobile, email, secret) 
         unless @transaction.blank?
           @document = @transaction.document
           user = mobile.blank? ? email : mobile
           @event = @transaction.receive_event(user, params[:serial_number])
-          respond_to do |format|
-            format.html { redirect_to URI.encode @document.doc.url(:original, false) }
-            format.xml #receive.xml 
-          end
         else
-          respond_to do |format|
-            @transaction = Transaction.new(params[:transaction])
-            format.html { render :file => "#{Rails.root}/public/404.html", :status => :not_found }
-            format.xml
-          end
-        end
-      else
-        respond_to do |format|
           @transaction = Transaction.new(params[:transaction])
-          format.html { render :action =>  "receive"}
-          format.xml  { render :xml => @transaction }
-         end
+          @transaction.errors.add(:base, "Your Document not found")
+        end
       end
     else
       @transaction = Transaction.new
+    end
+    
+    if !@transaction.errors.blank? or @transaction.new_record?
       respond_to do |format|
-        format.html # receive.html.erb
-        format.xml  { render :xml => @transaction }
+        format.html { render :action =>  "receive", :alert => "Mail Not found"}
+        format.xml {render :xml => @transaction.errors} #, :status => :unprocessable_entity}
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to URI.encode @document.doc.url(:original, false) }
+        format.xml #receive.xml 
       end
     end
   end

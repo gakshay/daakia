@@ -1,46 +1,37 @@
 <h1>Receive Mail</h1>
-
-<%= form_for(@transaction, :url => receive_transactions_path,  :html => {:method => :get, :class => "form-vertical"}) do |f| %>
-  <% if @transaction.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@transaction.errors.count, "error") %> prohibited to retreive Document</h2>
-
-      <ul>
-      <% @transaction.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <hr>
-  <br>
-  <div class="control-group">
-    <%= f.label :receiver_mobile, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :receiver_mobile, :class => 'text_field' %>
-    </div>
+<hr>
+<% if current_user.blank? %>
+  <div class="span4 left hidden-phone">
+    <%= image_tag("mascot.jpg", :max_width => "200")%>
   </div>
-  <p>Or</p>
-  <div class="control-group">
-    <%= f.label :receiver_email, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :receiver_email, :class => 'text_field' %>
+<% end%>
+
+<%= simple_form_for @transaction, :url => receive_transactions_url,  :html => {:method => :get, :class => "form-vertical left"} do |f| %>
+    <% unless @transaction.errors.blank? %>
+      <p class="alert">
+        <% @transaction.errors.full_messages.each do |msg| %>
+          <%= msg %><br>
+        <% end %>
+      </p>
+    <% end%>
+    
+    <div id="receiver_mobile" class="left">
+      <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00', :input_html => {:maxlength => 10}%>
     </div>
-  </div>
+    <div id="receiver_email" style="display:none" class="left">
+      <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com'%>
+    </div>
+    
+    <div class="left" style="margin: 22px 0 0 20px;">
+      <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
+    </div>
+    
+    <div class="clear"></div>
+    <div id="document_secret">
+      <%= f.input :document_secret, :label => 'Secret Code', :input_html => {:maxlength => 6} %>
+    </div>
   
-  <div class="control-group">
-    <%= f.label :document_secret, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :document_secret, :class => 'text_field', :maxlength => 6 %>
-    </div>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Receive Mail", :class => "btn btn-primary" %>
-  </div>
+    <%= f.button :submit, "Receive Mail", :class => "btn-large btn-primary" %>
+  
 <% end %>
 
-<% if !current_user %>
-  <%= link_to 'Login', new_user_session_url %> | <%= link_to 'Register', new_user_registration_url %>
-<% end%>

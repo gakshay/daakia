@@ -1,5 +1,5 @@
 ActiveAdmin.register Document do
-  menu :label => "Files"
+  menu :label => "Files", :parent => "Mails"
   actions  :index, :new, :create, :show, :destroy
   
   index do

@@ -4,18 +4,19 @@ require 'net/http'
 require 'net/https'
 require 'json'
 require 'uri'
-require 'message/smscraze'
-require 'message/waysms'
+#require 'message/smscraze'
+require 'message/mobme'
 require 'curb'
 
 module Message
   class << self
-    def registration_success_template(password, amount, type)
-"Registration: Success
-Secret PIN: #{password}
+    def registration_success_template(mobile, password, amount, type)
+"Welcome to eDakia! Your number #{mobile} registered
+
 Balance: #{amount}/-
-Account: #{type}
-Welcome to eDakia! Do not share your Secret PIN."
+Password: #{password}
+
+Please save and do not share your Password."
     end
     
     def registration_kyc_success_template(amount, type)
@@ -29,31 +30,33 @@ Welcome to eDakia!"
       "Sorry! Your mobile numer is already registered with eDakia."
     end
     
-    def document_sender_success_template(cost, secret, receiver, time, amount, url)
-"Success!
+    def user_account_balance(mobile, balance, time)
+"#{mobile}, your current eDakia Acc Balance is #{balance} as on #{time}."
+    end
+    
+    def document_sender_success_template(cost, secret, receiver, time, balance, url=nil)
+"Mail sent.
+To: #{receiver}
+Doc ID: #{secret}
 Txn Fee: #{cost}
-eDak Code: #{secret}
-Recipient: #{receiver}
-Timestamp: #{time}
-Balance: #{balance}
-Access your eDak at #{balance}"
+Account Balance: #{balance} on #{time}
+Access here #{EDAKIA['host']}/receive"
     end
     
-    def document_receiver_email_registered_template(sender, secret, time, email, url)
-"New eDak received!
+    def document_receiver_email_registered_template(sender, secret, time, email, url=nil)
+"Mail received.
 From: #{sender}
-eDak Code: #{secret}
-Timestamp: #{time}
-eDak has been sent to #{email} or access at <url>"
-      
+Doc ID: #{secret}
+on #{time}
+Check email #{email} or access here #{EDAKIA['host']}/receive"
     end
     
-    def document_receiver_template(sender, secret, time, url)
-"New eDak received!
+    def document_receiver_template(sender, secret, time, url=nil)
+"Mail received.
 From: #{sender}
-eDak Code: #{secret}
-Timestamp: #{time}
-Access your eDak at #{url}"
+Doc ID: #{secret}
+on #{time}
+Access here #{EDAKIA['host']}/receive"
     end
     
     def document_sender_network_failure_template
@@ -66,6 +69,44 @@ Access your eDak at #{url}"
     
     def document_sender_page_count_failure_template(count = 10)
       "Sorry! Your eDak sending failed. Only #{count} pages are allowed per eDak"
+    end
+    
+    def retailer_recharge_success(mobile, amount, balance, time)
+"eDakia Kendra #{mobile} recharge successful.
+
+Amount Paid: #{amount}
+Current Balance: #{balance}
+on #{time}"
+    end
+    
+    def retailer_balance_low(mobile, balance)
+"eDakia Kendra #{mobile} current balance #{balance} is low.
+
+Please recharge soon for uninteruppted eDakia services"
+    end
+    
+    def retailer_registration(mobile, balance, password, time)
+"eDakia Kendra #{mobile} registered.
+
+Current Balance: #{balance}
+Password: #{password}
+on #{time}"
+    end
+    
+    def general_request_received(request, cost, balance)
+"#{request} request received.
+Txn Fee: #{cost}
+Account Balance: #{balance}
+
+You will be notified soon"
+    end
+    
+    def general_request_replied(request, secret, time, url=nil)
+"#{request} request done.
+
+Doc ID: #{secret}
+on #{time}
+Access here #{EDAKIA['host']}/receive"
     end
   end
 end

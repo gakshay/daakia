@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
+  devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
@@ -51,6 +51,11 @@ class User < ActiveRecord::Base
     end
   end
   
+  def self.check_balance(user_credential)
+    user = User.where("mobile = ? or email = ?", user_credential, user_credential ).select("id, mobile, balance").first
+    user.blank? ? nil : user.balance
+  end
+  
   protected
 
   def self.find_for_database_authentication(warden_conditions)
@@ -88,7 +93,7 @@ class User < ActiveRecord::Base
   end
   
   def send_user_registration_sms
-    message = Message.registration_success_template(self.password, self.balance, self.role.title)
+    message = Message.registration_success_template(self.mobile, self.password, self.balance, self.role.title)
     self.smss.create(:receiver => self.mobile, :message => message)
   end
 
