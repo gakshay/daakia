@@ -38,8 +38,8 @@ Welcome to eDakia!"
 "Mail sent.
 To: #{receiver}
 Doc ID: #{secret}
-Txn Fee: #{cost}
-Account Balance: #{balance} on #{time}
+Txn Fee: #{cost}/-
+Account Balance: #{balance}/- on #{time}
 Access here #{EDAKIA['host']}/receive"
     end
     
@@ -74,13 +74,13 @@ Access here #{EDAKIA['host']}/receive"
     def retailer_recharge_success(mobile, amount, balance, time)
 "eDakia Kendra #{mobile} recharge successful.
 
-Amount Paid: #{amount}
-Current Balance: #{balance}
+Amount Paid: #{amount}/-
+Current Balance: #{balance}/-
 on #{time}"
     end
     
     def retailer_balance_low(mobile, balance)
-"eDakia Kendra #{mobile} current balance #{balance} is low.
+"eDakia Kendra #{mobile} current balance #{balance}/- is low.
 
 Please recharge soon for uninteruppted eDakia services"
     end
@@ -88,15 +88,15 @@ Please recharge soon for uninteruppted eDakia services"
     def retailer_registration(mobile, balance, password, time)
 "eDakia Kendra #{mobile} registered.
 
-Current Balance: #{balance}
+Current Balance: #{balance}/-
 Password: #{password}
 on #{time}"
     end
     
     def general_request_received(request, cost, balance)
 "#{request} request received.
-Txn Fee: #{cost}
-Account Balance: #{balance}
+Txn Fee: #{cost}/-
+Account Balance: #{balance}/-
 
 You will be notified soon"
     end
