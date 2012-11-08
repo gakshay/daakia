@@ -2,7 +2,7 @@ xml.instruct!
 xml.transaction do 
   unless @document.blank?
     xml.id(@transaction.id)
-    xml.status("Document found Successfully")
+    xml.status("Mail found Successfully")
     xml.creation_date(@transaction.created_at.to_date)
     xml.document_url(@document.doc.url(:original, false))
     xml.document_type(@document.doc_content_type)

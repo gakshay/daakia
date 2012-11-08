@@ -1,5 +1,4 @@
 xml.instruct!
-if 
 xml.response do
   # 
   # if @wait
