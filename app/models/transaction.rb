@@ -124,9 +124,10 @@ class Transaction < ActiveRecord::Base
       if user.balance >= cost
         user.balance = user.balance - cost
         cost = 0
-      else
-        cost = cost - user.balance
-        user.balance = 0
+        retailer_cost = 0
+      # else
+      #         cost = cost - user.balance
+      #         user.balance = 0
       end
       user.save!
     end

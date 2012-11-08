@@ -37,6 +37,7 @@ class TransactionsController < ApplicationController
       if @transaction.save
         @event = @transaction.send_event(params[:serial_number])
         @document = @transaction.document
+        @user = User.find_by_mobile(@transaction.sender_mobile, :select => "id, balance")
         format.html { redirect_to(@transaction, :notice => 'Mail was successfully sent.') }
         format.xml  
         #format.json  { render :json => @transaction, :status => :created, :location => @transaction }
