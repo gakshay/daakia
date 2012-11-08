@@ -8,7 +8,11 @@ xml.transaction do
     xml.status("eDak sent successfully")
     xml.creation_date(@transaction.created_at.to_date)
     xml.document_url(@document.doc.url(:original, false))
-    xml.cost(@transaction.events.where("action = ? or action = ?","send", "save").first.cost)
+    #xml.cost(@transaction.events.where("action = ? or action = ?","send", "save").first.cost)
+    xml.cost(@event.cost)
+    unless current_user.blank?
+      xml.balance(current_user.balance)
+    end
   else
     xml.error("eDak can not be sent")
     if @transaction

@@ -35,7 +35,7 @@ class TransactionsController < ApplicationController
     @transaction.serial_number = params[:serial_number] unless params[:serial_number].blank?
     respond_to do |format|
       if @transaction.save
-        @transaction.send_event(params[:serial_number])
+        @event = @transaction.send_event(params[:serial_number])
         @document = @transaction.document
         format.html { redirect_to(@transaction, :notice => 'Mail was successfully sent.') }
         format.xml  
@@ -146,6 +146,7 @@ class TransactionsController < ApplicationController
           @document = @transaction.document
           user = mobile.blank? ? email : mobile
           @event = @transaction.receive_event(user, params[:serial_number])
+          @user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
         else
           @transaction = Transaction.new(params[:transaction])
           @transaction.errors.add(:base, "Your Document not found")

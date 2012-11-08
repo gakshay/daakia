@@ -8,8 +8,8 @@ xml.transaction do
     xml.document_type(@document.doc_content_type)
     xml.document_size("#{@document.doc_file_size} B")
     xml.machine(@machine.serial_number)
-    unless @balance.blank?
-      xml.balance(@balance)
+    unless @user.blank?
+      xml.balance(@user.balance)
     end
     xml.cost(@event.cost)
   else
