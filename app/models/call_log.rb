@@ -3,23 +3,20 @@ class CallLog < ActiveRecord::Base
   validates_presence_of :caller
   
   def register_user
-    if correct?
-      if registered?
-        return "DUPLICATE"
-      else
-        user = User.register_user(self.caller)
-        user.blank? ? "ERROR" : "SUCCESS"
-      end
+    if registered?
+      return "DUPLICATE"
     else
-      return "INVALID MOBILE"
+      user = User.register_user(self.caller)
+      user.blank? ? "ERROR" : "SUCCESS"
     end
   end
   
   def correct?
-    !self.caller.match(/^[789][0-9]{9}$/).nil?
+    !self.caller.match(/(^0?[789][0-9]{9}$)|(^91[789][0-9]{9}$)|(^0091[789][0-9]{9}$)|(^\+?91[789][0-9]{9}$)/i).nil?
   end
   
   def registered?
+    self.caller = self.caller[/\d{10}$/]
     user = User.find_by_mobile(self.caller)
     unless user.blank?
       if user.role.name == "basic"

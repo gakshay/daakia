@@ -52,16 +52,16 @@ class Api::UsersController < ApplicationController
   end
   
   def register
-    @wait = false
+    @hung = false
     if !params['sid'].blank? && !params['event'].blank?
       if params['event'] == "NewCall"
         mobile = params['cid']
         @call_log = CallLog.create(:caller => mobile, :sid => params['sid'], :event => "register", :called_number => params['called_number'], :operator => params['operator'], :circle => params['circle'] )
+        @valid = @call_log.correct?
         @status = "NEW CALL"
       elsif params['event'] == "GotDTMF"
         if params['data'] == "1"
           @call_log = CallLog.find_by_sid(params['sid'])
-          #@wait = true
           @status = @call_log.register_user
         else
           @status = "INVALID INPUT"
