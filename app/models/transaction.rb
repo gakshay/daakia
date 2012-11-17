@@ -195,7 +195,7 @@ class Transaction < ActiveRecord::Base
     sender = User.find_by_mobile(self.sender_mobile, :select => "id, balance")
     balance = sender.balance
     sender_template = Message.document_sender_success_template(cost, self.document_secret, receiver, time, balance)
-    unless self.receiver_mobile.blank?
+    if !self.receiver_mobile.blank? and (self.receiver_mobile != self.sender_mobile)
       if self.other_domain_receiver_email?
         receiver_template = Message.document_receiver_email_registered_template(self.sender_mobile, self.document_secret, time, self.receiver_email)
       else
