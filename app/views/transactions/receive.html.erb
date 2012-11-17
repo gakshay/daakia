@@ -28,7 +28,10 @@
     
     <div class="clear"></div>
     <div id="document_secret">
-      <%= f.input :document_secret, :label => 'Secret Code', :input_html => {:maxlength => 6} %>
+      <%= f.label :document_secret, "Doc ID" %>
+      <%= f.password_field :document_secret, :input_html => {:maxlength => 6} %>
+      
+      <%#= f.input :document_secret, :label => 'Doc ID', :hint => false, :input_html => {:maxlength => 6} %>
     </div>
   
     <%= f.button :submit, "Receive Mail", :class => "btn-large btn-primary" %>
