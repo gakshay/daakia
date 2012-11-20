@@ -58,9 +58,9 @@
                 <li><%= link_to "Logout", destroy_user_session_path  %></li>
               <% else %>
                 <li><%#= render :partial => "home/login"%></li>
-                <li><%= link_to "Login", new_user_session_url  %></li>
+                <li><%#= link_to "Login", new_user_session_url  %></li>
                 <li><%#= link_to "Register", new_user_registration_url  %></li>
-                <li><%= link_to "Receive Mail", "/receive"  %></li>
+                <li><%#= link_to "Receive Mail", "/receive"  %></li>
               <% end %>
             </ul>
           </div><!--/.nav-collapse -->
@@ -122,16 +122,16 @@
           </div>
           <div class="span6">
             <div class="row-fluid">
-              <div class="span1"><%= link_to "About", "#" %></div>
-              <div class="span2"><%= link_to "How it works", "#" %></div>
-              <div class="span1"><%= link_to "Blog", "http://blog.edakia.in", :target => "_blank" %></div>
-              <div class="span1"><%= link_to "FAQ", "#" %></div>
-              <div class="span1"><%= link_to "Team", "#"  %></div>
-              <div class="span3"><%= link_to "Terms and Conditions", "#" %></div>
+              <div class="span1"><%#= link_to "About", "#" %></div>
+              <div class="span2"><%#= link_to "How it works", "#" %></div>
+              <div class="span1"><%#= link_to "Blog", "http://blog.edakia.in", :target => "_blank" %></div>
+              <div class="span1"><%#= link_to "FAQ", "#" %></div>
+              <div class="span1"><%#= link_to "Team", "#"  %></div>
+              <div class="span3"><%#= link_to "Terms and Conditions", "#" %></div>
             </div>
           </div>
           <div class="span4">
-            <em>Copyright &copy; 2012 eDakia Communications, All rights reserved.</em>
+            <!-- <em>Copyright &copy; 2012 eDakia Communications, All rights reserved.</em> -->
           </div>
         </div>
       </footer>
