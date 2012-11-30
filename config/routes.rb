@@ -34,6 +34,10 @@ DakiaWeb::Application.routes.draw do
     end
   end
   
+  namespace :retailers do
+    resources :transactions, :only => [:index, :destroy, :new, :create, :show]
+  end
+  
   match 'receive' => 'transactions#receive'
   
   # The priority is based upon order of creation:

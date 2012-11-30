@@ -1,7 +1,7 @@
 class Transaction < ActiveRecord::Base
   
   default_scope {where(:active => true)}
-  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :documents_attributes, :document_secret, :active, :read, :user_id, :retailer_id, :receiver_emails
+  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :documents_attributes, :document_secret, :active, :read, :user_id, :retailer_id, :receiver_emails, :sender_email
   attr_accessor :serial_number, :cost
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true

@@ -1,0 +1,40 @@
+<%- model_class = Transaction -%>
+<div class="page-header">
+  <h1>Mails Tracking</h1>
+</div>
+
+<table class="table table-striped">  
+  <thead>
+    <tr>
+      <th><%= model_class.human_attribute_name(:id) %></th>
+      <th><%= model_class.human_attribute_name(:sender_mobile) %></th>
+      <th><%= model_class.human_attribute_name(:sender_email)  %></th>
+      <th><%= model_class.human_attribute_name(:receiver_mobile) %></th>
+      <th><%= model_class.human_attribute_name(:receiver_emails) %></th>
+      <th><%= model_class.human_attribute_name(:documents) %></th>
+      <th><%= model_class.human_attribute_name(:created_at) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @transactions.each_with_index do |transaction, i| %>
+      <tr>
+        <td><%= link_to i+1, retailers_transaction_path(transaction) %></td>
+        <td><%= transaction.sender_mobile %></td>
+        <td><%= transaction.sender_email %></td>
+        <td><%= transaction.receiver_mobile %></td>
+        <td><%= transaction.receiver_emails %>
+        </td>
+        <td><%= transaction.documents.count %></td>
+        <td>
+          <% if transaction.created_at.to_date == Date.today  %>
+            <%= transaction.created_at.strftime("%I:%M %p")     %>
+          <% else %>
+            <%= transaction.created_at.strftime("%d-%b-%Y %I:%M") %>
+          <% end   %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
