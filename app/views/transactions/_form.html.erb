@@ -1,5 +1,14 @@
 <%= simple_form_for @transaction, :html => { :multipart => true, :class => 'form-vertical' } do |f| %>
-
+    
+    <% unless @transaction.errors.blank? %>
+    <div class="alert alert-error">
+      <% @transaction.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+      <% end %>
+    </div>
+    <% end %>
+    
+    
     <div id="receiver_mobile">
       <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00', :input_html => {:class => "left"}%>
     </div>

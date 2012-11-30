@@ -29,7 +29,7 @@ new_transaction_path,
       <% unread = (current_user.id == transaction.receiver_id && transaction.unread?) ? "class='unread'" : ""%>
       <tr <%= unread %> >
         <td><%= link_to i+1, transaction_path(transaction) %></td>
-        <td><%= link_to "#{transaction.documents.first.doc_file_name}", download_transaction_path(transaction), :method => :post, :class => "btn btn-mini", :target => "_blank" %></td>
+        <td><%= link_to "#{transaction.documents.first.doc_file_name}", download_transaction_path(transaction), :method => :post, :class => "btn btn-mini", :target => "_blank" unless transaction.documents.blank? %></td>
         <td><%= transaction.document_secret %></td>
         <td><%= transaction.sender_mobile %></td>
         <td><%= transaction.receiver_mobile %><br><%= transaction.receiver_email %></td>

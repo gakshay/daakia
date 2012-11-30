@@ -41,7 +41,7 @@ class Retailers::TransactionsController < ApplicationController
   # GET retailers/transactions/new.xml
   def new
     @retailer_transaction = current_retailer.transactions.new
-    3.times do 
+    2.times do
       @retailer_transaction.documents.build
     end
     respond_to do |format|
@@ -54,17 +54,31 @@ class Retailers::TransactionsController < ApplicationController
    # POST retailers/transactions.xml
    def create
      @retailer_transaction = current_retailer.transactions.new(params[:transaction])
+     @retailer_transaction.retailer_id = current_retailer.id
      respond_to do |format|
-       if @retailer_transaction.save
-         @event = @retailer_transaction.send_event(params[:serial_number])
-         @document = @retailer_transaction.documents.first
-         @user = User.find_by_mobile(@retailer_transaction.sender_mobile, :select => "id, balance")
-         format.html { redirect_to(@retailer_transaction, :notice => 'Mail was successfully sent.') }
+       if current_retailer.credit <= 0
+         @retailer_transaction.errors.add(:base, "You have no credit. Please contact and buy more credit.")
+         format.html { redirect_to(new_retailers_transaction_url, :alert => @retailer_transaction.errors.full_messages.join(". "))}
+         format.xml {render :xml => @retailer_transaction.errors}
+       elsif @retailer_transaction.save
+         #@event = @retailer_transaction.send_event(params[:serial_number])
+         #@document = @retailer_transaction.documents.first
+         format.html { redirect_to(retailers_transactions_url, :notice => 'Mail was successfully sent.') }
          format.xml  
        else
+         @retailer_transaction.documents.build
          format.html { render :action => "new"}
          format.xml  
        end
+     end
+   end
+   
+   # retailer transactions log
+   def retailer_txn
+     @txns = current_retailer.events.order("created_at DESC")
+     respond_to do |format|
+       format.html # receive.html.erb
+       format.xml  { render :xml => @transactions }
      end
    end
 end

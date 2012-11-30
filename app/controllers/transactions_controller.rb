@@ -33,7 +33,11 @@ class TransactionsController < ApplicationController
     @transaction = Transaction.new(params[:transaction])
     @transaction.serial_number = params[:serial_number] unless params[:serial_number].blank?
     respond_to do |format|
-      if @transaction.save
+      if current_user.credit <= 0
+         @transaction.errors.add(:base, "You have no credit. Please contact and buy more credit.")
+         format.html { redirect_to(new_transaction_url, :alert => @transaction.errors.full_messages.join(". "))}
+         format.xml {render :xml => @transaction.errors}
+      elsif @transaction.save
         @event = @transaction.send_event(params[:serial_number])
         @document = @transaction.documents.first
         @user = User.find_by_mobile(@transaction.sender_mobile, :select => "id, balance")
@@ -41,6 +45,7 @@ class TransactionsController < ApplicationController
         format.xml  
         #format.json  { render :json => @transaction, :status => :created, :location => @transaction }
       else
+        @transaction.documents.build
         format.html { render :action => "new"}
         format.xml  
         #format.json  { render :json => @transaction.errors, :status => :unprocessable_entity }
@@ -171,12 +176,5 @@ class TransactionsController < ApplicationController
     end
   end
   
-  # retailer transactions log
-  def retailer_txn
-    @txns = current_retailer.events.order("created_at DESC")
-    respond_to do |format|
-      format.html # receive.html.erb
-      format.xml  { render :xml => @transactions }
-    end
-  end
+  
 end

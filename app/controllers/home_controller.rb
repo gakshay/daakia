@@ -6,7 +6,7 @@ class HomeController < ApplicationController
       redirect_to transactions_url
     end
     if retailer_signed_in?
-      redirect_to retailer_txn_transactions_url
+      redirect_to retailers_transactions_url
     end
   end
   
