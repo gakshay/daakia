@@ -13,6 +13,7 @@ class Retailer < ActiveRecord::Base
   validates_uniqueness_of :mobile, :allow_blank => true
   validates_numericality_of :mobile, :only_integer => true, :allow_nil  => true
   validates_numericality_of :age, :only_integer => true, :allow_nil  => true
+  validates_presence_of :first_name, :last_name, :address
   
   has_many :machines
   has_many :events, :through => :machines

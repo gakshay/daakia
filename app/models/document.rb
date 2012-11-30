@@ -1,5 +1,5 @@
 class Document < ActiveRecord::Base
-  attr_accessible :doc, :user_id, :pages, :transaction_id, :doc_content_type, :doc_file_size, :doc_file_name
+  attr_accessible :doc, :user_id, :pages, :transaction_id
   has_attached_file :doc, {
     :use_timestamp => true, 
     :storage => :s3, 
