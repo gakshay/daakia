@@ -5,7 +5,7 @@ class TransactionsController < ApplicationController
   # GET /transactions
   # GET /transactions.xml
   def index
-    @transactions = Transaction.where("sender_mobile = ? or receiver_mobile = ? or receiver_email = ?", current_user.mobile, current_user.mobile, current_user.email).includes(:document).order("created_at DESC")
+    @transactions = Transaction.where("sender_mobile = ? or receiver_mobile = ? or receiver_email = ?", current_user.mobile, current_user.mobile, current_user.email).includes(:documents).order("created_at DESC")
     #print request.env.inspect
     respond_to do |format|
       format.html # index.html.erb
@@ -19,7 +19,6 @@ class TransactionsController < ApplicationController
   def show
     @transaction = Transaction.where("id = ? and (sender_mobile = ? or receiver_mobile = ? or receiver_email = ?)  ", params[:id], current_user.mobile, current_user.mobile, current_user.email).first
     unless @transaction.blank?
-      @document = @transaction.document
       respond_to do |format|
         format.html # show.html.erb
         format.xml
@@ -36,7 +35,7 @@ class TransactionsController < ApplicationController
     respond_to do |format|
       if @transaction.save
         @event = @transaction.send_event(params[:serial_number])
-        @document = @transaction.document
+        @document = @transaction.documents.first
         @user = User.find_by_mobile(@transaction.sender_mobile, :select => "id, balance")
         format.html { redirect_to(@transaction, :notice => 'Mail was successfully sent.') }
         format.xml  
@@ -53,7 +52,9 @@ class TransactionsController < ApplicationController
   # GET /transactions/new.xml
   def new
     @transaction = Transaction.new
-    @transaction.build_document
+    1.times do 
+      @transaction.documents.build
+    end
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @transaction }
@@ -105,7 +106,7 @@ class TransactionsController < ApplicationController
           @transaction.mark_mail_read 
           current_user.decrement_unread_count
         end
-        @document = @transaction.document
+        @document = @transaction.documents.first
         @transaction.receive_event(current_user.mobile)
         respond_to do |format|
           format.html { redirect_to URI.encode @document.doc.url(:original, false) }
@@ -144,7 +145,7 @@ class TransactionsController < ApplicationController
       if @transaction.errors.blank?
         @transaction = Transaction.get_document(mobile, email, secret) 
         unless @transaction.blank?
-          @document = @transaction.document
+          @document = @transaction.documents.first
           user = mobile.blank? ? email : mobile
           @event = @transaction.receive_event(user, params[:serial_number])
           @user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first

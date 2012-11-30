@@ -15,13 +15,13 @@
     
     <%= f.input :sender_mobile, :as => :hidden, :input_html => { :value => current_user.mobile } %>
     
-    <%= f.simple_fields_for :document, @transaction.document do |document_form| %>
+    <%= f.simple_fields_for :documents, @transaction.documents.first do |document_form| %>
       <%= document_form.error :doc_content_type, :class => "alert alert-error" %>
       <%= document_form.error :doc_file_size, :class => "alert alert-error" %>
       <%= document_form.input :doc, :label => "Your File", :as => :file %>
-      <%= document_form.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
     <% end%>
     <br>
+    <%= f.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
     <%= f.button :submit, "Send Mail", :class => "btn-large btn-primary" %>
     <%= link_to "Cancel", transactions_path, :class => "btn" %>
   

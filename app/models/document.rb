@@ -1,5 +1,5 @@
 class Document < ActiveRecord::Base
-  attr_accessible :doc, :user_id, :pages, :transaction_id
+  attr_accessible :doc, :user_id, :pages, :transaction_id, :doc_content_type, :doc_file_size, :doc_file_name
   has_attached_file :doc, {
     :use_timestamp => true, 
     :storage => :s3, 
@@ -25,6 +25,7 @@ class Document < ActiveRecord::Base
   #has_many :transactions
   
   belongs_to :transaction
+  #accepts_nested_attributes_for :transaction
   
   
   #after_create :update_new_user_account_type

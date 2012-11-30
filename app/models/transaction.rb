@@ -1,7 +1,7 @@
 class Transaction < ActiveRecord::Base
   
   default_scope {where(:active => true)}
-  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active, :read, :user_id, :retailer_id, :receiver_emails
+  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :documents_attributes, :document_secret, :active, :read, :user_id, :retailer_id, :receiver_emails
   attr_accessor :serial_number, :cost
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
@@ -222,7 +222,9 @@ class Transaction < ActiveRecord::Base
     application/vnd.openxmlformats-officedocument.wordprocessingml.document
     application/msword
     application/vnd.ms-powerpoint
+    application/pdf
     )
+=begin
     if self.document.doc.content_type == "application/pdf"
       require 'open-uri' unless defined?(OpenURI)
       begin
@@ -233,18 +235,22 @@ class Transaction < ActiveRecord::Base
       rescue => ex
         Report.error("document", "PDF Page count failed #{ex}")
       end  
-    elsif formats.include?(self.document.doc.content_type)
-      begin
-        yomu = Yomu.new(self.document.doc.url(:original, false))
-        metadata = yomu.metadata
-        unless metadata['xmpTPg:NPages'].blank?
-          self.document.pages = metadata['xmpTPg:NPages']
-          self.document.save
+    els
+=end
+    self.documents.each do |document|
+      if formats.include?(document.doc.content_type)
+        begin
+          yomu = Yomu.new(document.doc.url(:original, false))
+          metadata = yomu.metadata
+          unless metadata['xmpTPg:NPages'].blank?
+            self.document.pages = metadata['xmpTPg:NPages']
+            self.document.save
+          end
+        rescue => ex
+          Report.error("document", "Yomu Page count failed #{ex}")
         end
-      rescue => ex
-        Report.error("document", "Yomu Page count failed #{ex}")
-      end
-    end  
+      end 
+    end 
   end #update document page count
   
 end #model transaction
