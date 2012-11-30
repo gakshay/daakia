@@ -19,8 +19,8 @@ class User < ActiveRecord::Base
   before_save :credit_referee_amount
   after_create :send_user_registration_sms
   
-  has_many :documents
-  has_many :transactions, :through => :documents
+  #has_many :documents
+  has_many :transactions#, :through => :documents
   has_many :referrals, :class_name => "User", :foreign_key => "referee_id"
   belongs_to :referee, :class_name => "User"
   has_many :smss, :as => :service

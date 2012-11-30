@@ -1,7 +1,7 @@
 class Transaction < ActiveRecord::Base
   
   default_scope {where(:active => true)}
-  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active, :read
+  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active, :read, :user_id, :retailer_id, :receiver_emails
   attr_accessor :serial_number, :cost
   validates_presence_of :sender_mobile
   validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
@@ -14,12 +14,14 @@ class Transaction < ActiveRecord::Base
   validates_presence_of :receiver_email, :if => :receiver_email_required?
   validates_format_of :receiver_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
 
-  belongs_to :document
-  accepts_nested_attributes_for :document
+  has_many :documents
+  accepts_nested_attributes_for :documents
   
   has_many :events
   has_many :smss, :as => :service
   has_many :mail_urls
+  belongs_to :user
+  belongs_to :retailer
   
   # model hooks
   before_create :assign_sender, :assign_receiver, :generate_document_secret

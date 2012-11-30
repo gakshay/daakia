@@ -16,8 +16,10 @@ class Retailer < ActiveRecord::Base
   
   has_many :machines
   has_many :events, :through => :machines
-  has_many :transactions, :through => :events
+  has_many :transactions#, :through => :events
   has_many :smses, :as => :service
+  
+  belongs_to :plan
   
   before_create :filter_mobile_number, :create_email_for_retailer
   

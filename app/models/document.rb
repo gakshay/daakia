@@ -1,5 +1,5 @@
 class Document < ActiveRecord::Base
-  attr_accessible :doc, :user_id, :pages
+  attr_accessible :doc, :user_id, :pages, :transaction_id
   has_attached_file :doc, {
     :use_timestamp => true, 
     :storage => :s3, 
@@ -14,7 +14,6 @@ class Document < ActiveRecord::Base
     'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-excel', 
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ], :message => "File format not supported"
   validates_attachment_size :doc, :less_than => 5.megabyte, :message => "File must be less than 5MB", :if => Proc.new { |imports| !imports.doc_file_name.blank? }
-  validates_presence_of :user_id
   
   VALID_CONTENT_TYPES = [ 'image/jpg', 'image/jpeg', 'image/png', 
     'image/gif', 'text/plain', 'application/msword', 'application/pdf',
@@ -22,10 +21,13 @@ class Document < ActiveRecord::Base
     'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-excel', 
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ]
   
-  belongs_to :user
-  has_many :transactions
+  #belongs_to :user
+  #has_many :transactions
   
-  after_create :update_new_user_account_type
+  belongs_to :transaction
+  
+  
+  #after_create :update_new_user_account_type
 =begin
   
   before_validation(:on => :create) do |file|
@@ -41,7 +43,7 @@ class Document < ActiveRecord::Base
     errors.add(:doc, "type is not allowed") unless VALID_CONTENT_TYPES.include?(self.doc_content_type)
   end
   
-=end
+
   private 
   
   # update the user account type(role) after first transaction
@@ -51,5 +53,5 @@ class Document < ActiveRecord::Base
       self.user.save
     end
   end
-  
+=end 
 end

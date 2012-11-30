@@ -81,7 +81,7 @@
                 <%#= render :partial => "home/login"%>
               <% end %>
               <li><%= link_to "Send Mail", new_transaction_url  %></li>
-              <li><%= link_to "Receive Mail", receive_transactions_url  %></li>   
+              <li>Credit: <%= current_user.credit %> </li>   
               <li><%= link_to "Logout", destroy_user_session_path  %></li>           
             </ul>
           </div><!--/.well -->
