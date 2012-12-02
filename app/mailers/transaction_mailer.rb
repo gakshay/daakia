@@ -28,7 +28,11 @@ class TransactionMailer < ActionMailer::Base
       unless @recipient_emails.blank?
         @sender = transaction.sender_email.blank? ? "#{transaction.sender_mobile}@edakia.in" : transaction.sender_email
         @documents = transaction.documents
-        mail(:to => @recipient_emails, :bcc => transaction.retailer.email, :from => @sender, :subject => "#{@sender} has sent you an email: eDakia")
+        if @transaction.other_domain_sender_email?
+          mail(:to => @recipient_emails, :bcc => transaction.retailer.email, :cc => @sender, :from => @sender, :subject => "#{@sender} has sent you an email: eDakia")
+        else
+          mail(:to => @recipient_emails, :bcc => transaction.retailer.email, :from => @sender, :subject => "#{@sender} has sent you an email: eDakia")
+        end
       else
         self.message.perform_deliveries = false
       end

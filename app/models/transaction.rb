@@ -64,6 +64,10 @@ class Transaction < ActiveRecord::Base
     self.receiver_email.match(/@edakia\.in/).nil? unless self.receiver_email.blank?
   end
   
+  def other_domain_sender_email?
+    self.sender_email.match(/@edakia\.in/).nil? unless self.sender_email.blank?
+  end
+  
   # events handling
   
   def send_event(serial_number = nil)
@@ -168,7 +172,7 @@ class Transaction < ActiveRecord::Base
   def assign_sender
     user = User.find_by_mobile(self.sender_mobile, :select => "id")
     self.sender_id = user.id unless user.blank?
-    self.sender_email = nil if self.sender_email.blank?
+    self.sender_email = "#{self.sender_mobile}@edakia.in" if self.sender_email.blank?
   end
 
   def assign_receiver
