@@ -4,7 +4,7 @@ class Transaction < ActiveRecord::Base
   attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :documents_attributes, :document_secret, :active, :read, :user_id, :retailer_id, :receiver_emails, :sender_email
   attr_accessor :serial_number, :cost
   validates_presence_of :sender_mobile, :if => :sender_mobile_required?
-  validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
+  validates_numericality_of :sender_mobile, :only_integer => true, :allow_blank => true
   validates_format_of :sender_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
   
   validates_format_of :sender_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
@@ -14,8 +14,8 @@ class Transaction < ActiveRecord::Base
  
   #validates_presence_of :receiver_email, :if => :receiver_email_required?
   validates_format_of :receiver_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
-  #validates_format_of :receiver_emails, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
   validates :documents, :presence => {:message => "There should be atleast one file attached"}
+  validates_format_of :receiver_emails, :with => /\A(([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})(\n?\s?)*([,]\s?\n?)*)*\z/i, :allow_blank => true, :message => "is invalid or not comma separated"
 
   has_many :documents
   accepts_nested_attributes_for :documents
@@ -27,7 +27,7 @@ class Transaction < ActiveRecord::Base
   belongs_to :retailer
   
   # model hooks
-  before_create :assign_sender, :assign_receiver, :generate_document_secret
+  before_create :assign_sender, :assign_receiver, :generate_document_secret, :clean_multiple_emails
   after_create :update_document_page_count, :send_recipient_email, :deliver_document_secret_sms, :debit_credit  # , :generate_mail_short_url
   
  
@@ -187,6 +187,13 @@ class Transaction < ActiveRecord::Base
 
   def generate_document_secret
     self.document_secret = "%06d" % rand(10**6) #Time.now.to_i.to_s(36)
+  end
+  
+  def clean_multiple_emails
+    unless self.receiver_emails.blank?
+      emails = self.receiver_emails.split(",").collect do |e| e.gsub(/(\s*)?(\n*)?(\r*)?/, "") end
+      self.receiver_emails = emails.join(",")
+    end
   end
   
   def generate_mail_short_url

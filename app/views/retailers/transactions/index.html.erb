@@ -22,7 +22,13 @@
         <td><%= transaction.sender_mobile %></td>
         <td><%= transaction.sender_email %></td>
         <td><%= transaction.receiver_mobile %></td>
-        <td><%= transaction.receiver_emails %>
+        <td>
+        <% unless transaction.receiver_emails.blank? %>
+          <% transaction.receiver_emails.split(",").each do |email| %>
+            <%= email %>
+            <br>
+          <% end %>
+        <% end %>
         </td>
         <td><%= transaction.documents.count %></td>
         <td>

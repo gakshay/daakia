@@ -66,6 +66,7 @@ class Retailers::TransactionsController < ApplicationController
          format.html { redirect_to(retailers_transactions_url, :notice => 'Mail was successfully sent.') }
          format.xml  
        else
+         puts @retailer_transaction.errors.inspect
          @retailer_transaction.documents.build
          format.html { render :action => "new"}
          format.xml  
