@@ -24,6 +24,7 @@ class TransactionMailer < ActionMailer::Base
       @transaction = transaction
       @recipient_emails = transaction.receiver_emails
       @document_secret = transaction.document_secret
+      @retailer = transaction.retailer
       unless @recipient_emails.blank?
         @sender = transaction.sender_email.blank? ? "#{transaction.sender_mobile}@edakia.in" : transaction.sender_email
         @documents = transaction.documents
