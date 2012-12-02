@@ -41,6 +41,17 @@ DakiaWeb::Application.routes.draw do
   
   match 'receive' => 'transactions#receive'
   
+  resources :home do
+    get :careers, :on => :collection
+    get :team, :on => :collection
+    get :about_us, :on => :collection
+  end
+  
+  match "about_us" => "home#about_us"
+  match "careers" => "home#careers"
+  match "team" => "home#team"
+  
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
