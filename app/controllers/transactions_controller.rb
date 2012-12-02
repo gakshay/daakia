@@ -150,7 +150,7 @@ class TransactionsController < ApplicationController
       if @transaction.errors.blank?
         @transaction = Transaction.get_document(mobile, email, secret) 
         unless @transaction.blank?
-          @document = @transaction.documents.first
+          @documents = @transaction.documents
           user = mobile.blank? ? email : mobile
           @event = @transaction.receive_event(user, params[:serial_number])
           @user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
@@ -170,7 +170,7 @@ class TransactionsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to URI.encode @document.doc.url(:original, false) }
+        format.html { render :action => "receive", :locals => {:documents => @documents} }
         format.xml #receive.xml 
       end
     end

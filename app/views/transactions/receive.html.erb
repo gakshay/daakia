@@ -6,35 +6,44 @@
   </div>
 <% end%>
 
-<%= simple_form_for @transaction, :url => receive_transactions_url,  :html => {:method => :get, :class => "form-vertical left"} do |f| %>
-    <% unless @transaction.errors.blank? %>
-      <p class="alert">
-        <% @transaction.errors.full_messages.each do |msg| %>
-          <%= msg %><br>
-        <% end %>
-      </p>
-    <% end%>
+
+<% if @transaction.new_record? %>
+
+  <%= simple_form_for @transaction, :url => receive_transactions_url,  :html => {:method => :get, :class => "form-vertical left"} do |f| %>
+      <% unless @transaction.errors.blank? %>
+        <p class="alert">
+          <% @transaction.errors.full_messages.each do |msg| %>
+            <%= msg %><br>
+          <% end %>
+        </p>
+      <% end%>
     
-    <div id="receiver_mobile" class="left">
-      <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00', :input_html => {:maxlength => 10}%>
-    </div>
-    <div id="receiver_email" style="display:none" class="left">
-      <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com'%>
-    </div>
+      <div id="receiver_mobile" class="left">
+        <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00', :input_html => {:maxlength => 10}%>
+      </div>
+      <div id="receiver_email" style="display:none" class="left">
+        <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com'%>
+      </div>
     
-    <div class="left" style="margin: 22px 0 0 20px;">
-      <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
-    </div>
+      <div class="left" style="margin: 22px 0 0 20px;">
+        <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
+      </div>
     
-    <div class="clear"></div>
-    <div id="document_secret">
-      <%= f.label :document_secret, "Doc ID" %>
-      <%= f.password_field :document_secret, :input_html => {:maxlength => 6} %>
+      <div class="clear"></div>
+      <div id="document_secret">
+        <%= f.label :document_secret, "Doc ID" %>
+        <%= f.password_field :document_secret, :input_html => {:maxlength => 6} %>
       
-      <%#= f.input :document_secret, :label => 'Doc ID', :hint => false, :input_html => {:maxlength => 6} %>
-    </div>
+        <%#= f.input :document_secret, :label => 'Doc ID', :hint => false, :input_html => {:maxlength => 6} %>
+      </div>
   
-    <%= f.button :submit, "Receive Mail", :class => "btn-large btn-primary" %>
+      <%= f.button :submit, "Receive Mail", :class => "btn-large btn-primary" %>
   
+  <% end %>
+<% elsif documents %>
+    <% documents.each do |doc| %>
+     <h3><%= doc.doc_file_name %>&nbsp;&nbsp;&nbsp;<%= link_to "  view", URI.encode(doc.doc.url), :target => "_blank", :class => " btn btn-small" %></h3>
+     <br>
+    <% end %>
 <% end %>
 
