@@ -14,7 +14,7 @@ class Transaction < ActiveRecord::Base
  
   #validates_presence_of :receiver_email, :if => :receiver_email_required?
   validates_format_of :receiver_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
-  validates :documents, :presence => {:message => "There should be atleast one file attached"}
+  #validates :documents, :presence => {:message => "There should be atleast one file attached"}
   validates_format_of :receiver_emails, :with => /\A(([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})(\n?\s?)*([,]\s?\n?)*)*\z/i, :allow_blank => true, :message => "is invalid or not comma separated"
 
   has_many :documents
