@@ -102,28 +102,7 @@ class TransactionsController < ApplicationController
     end
   end
   
-  def download
-    unless params[:id].blank? && params[:transaction].blank?
-      @transaction = Transaction.find(params[:id])
-      unless @transaction.blank?
-        @transaction.increment_download_count
-        if (@transaction.unread? && current_user.id == @transaction.receiver_id )
-          @transaction.mark_mail_read 
-          current_user.decrement_unread_count
-        end
-        @document = @transaction.documents.first
-        @transaction.receive_event(current_user.mobile)
-        respond_to do |format|
-          format.html { redirect_to URI.encode @document.doc.url(:original, false) }
-        end
-      else
-        respond_to do |format|
-          format.html { redirect_to(transactions_url) }
-        end
-      end
-    end
-  end
-
+  
   # Receive /transactions/receive
   def receive
     unless params[:transaction].blank? 
@@ -175,6 +154,4 @@ class TransactionsController < ApplicationController
       end
     end
   end
-  
-  
 end

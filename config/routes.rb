@@ -8,8 +8,9 @@ DakiaWeb::Application.routes.draw do
 
   resources :transactions do
     get :receive, :on => :collection
-    post :download, :on => :member
-    get :retailer_txn, :on => :collection
+    resources :documents do 
+      get :download, :on => :member
+    end
   end
 
   #resources :documents

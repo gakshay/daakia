@@ -42,7 +42,7 @@
   <% end %>
 <% elsif documents %>
     <% documents.each do |doc| %>
-     <h3><%= doc.doc_file_name %>&nbsp;&nbsp;&nbsp;<%= link_to "  view", URI.encode(doc.doc.url), :target => "_blank", :class => " btn btn-small" %></h3>
+     <h3><%= doc.doc_file_name %>&nbsp;&nbsp;&nbsp;<%= link_to "View", URI.encode(doc.doc.url), :target => "_blank", :class => " btn btn-small" %></h3>
      <br>
     <% end %>
 <% end %>
