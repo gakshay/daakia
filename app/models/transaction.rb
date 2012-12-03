@@ -213,11 +213,13 @@ class Transaction < ActiveRecord::Base
     time = self.created_at.strftime("%d-%b-%Y %I:%M")
     unless self.retailer_id.blank?
       if !self.sender_mobile.blank? and (self.receiver_mobile != self.sender_mobile)
-        sender_template = Message.general_request_replied("Mail", "#{self.document_secret} From: #{self.sender_mobile}", time)
+        receiver = self.receiver_mobile.blank? ? self.receiver_emails.split(",").first : self.receiver_mobile
+        sender_template = Message.general_request_replied("Mail", "#{self.document_secret} To: #{receiver}", time)
         self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
       end
       if !self.receiver_mobile.blank? 
-        receiver_template = Message.document_receiver_template(self.sender_mobile, self.document_secret, time)
+        sender = self.sender_mobile.blank? ? self.sender_email : self.sender_mobile
+        receiver_template = Message.document_receiver_template(sender, self.document_secret, time)
         self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
       end
     else
