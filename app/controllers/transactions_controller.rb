@@ -5,7 +5,7 @@ class TransactionsController < ApplicationController
   # GET /transactions
   # GET /transactions.xml
   def index
-    @transactions = Transaction.where("sender_mobile = ? or receiver_mobile = ? or receiver_email = ?", current_user.mobile, current_user.mobile, current_user.email).includes(:document).order("created_at DESC")
+    @transactions = Transaction.where("sender_mobile = ? or receiver_mobile = ? or receiver_email = ?", current_user.mobile, current_user.mobile, current_user.email).includes(:documents).order("created_at DESC")
     #print request.env.inspect
     respond_to do |format|
       format.html # index.html.erb
@@ -19,7 +19,6 @@ class TransactionsController < ApplicationController
   def show
     @transaction = Transaction.where("id = ? and (sender_mobile = ? or receiver_mobile = ? or receiver_email = ?)  ", params[:id], current_user.mobile, current_user.mobile, current_user.email).first
     unless @transaction.blank?
-      @document = @transaction.document
       respond_to do |format|
         format.html # show.html.erb
         format.xml
@@ -34,14 +33,19 @@ class TransactionsController < ApplicationController
     @transaction = Transaction.new(params[:transaction])
     @transaction.serial_number = params[:serial_number] unless params[:serial_number].blank?
     respond_to do |format|
-      if @transaction.save
+      if current_user.credit <= 0
+         @transaction.errors.add(:base, "You have no credit. Please contact and buy more credit.")
+         format.html { redirect_to(new_transaction_url, :alert => @transaction.errors.full_messages.join(". "))}
+         format.xml {render :xml => @transaction.errors}
+      elsif @transaction.save
         @event = @transaction.send_event(params[:serial_number])
-        @document = @transaction.document
+        @document = @transaction.documents.first
         @user = User.find_by_mobile(@transaction.sender_mobile, :select => "id, balance")
         format.html { redirect_to(@transaction, :notice => 'Mail was successfully sent.') }
         format.xml  
         #format.json  { render :json => @transaction, :status => :created, :location => @transaction }
       else
+        @transaction.documents.build
         format.html { render :action => "new"}
         format.xml  
         #format.json  { render :json => @transaction.errors, :status => :unprocessable_entity }
@@ -53,7 +57,9 @@ class TransactionsController < ApplicationController
   # GET /transactions/new.xml
   def new
     @transaction = Transaction.new
-    @transaction.build_document
+    1.times do 
+      @transaction.documents.build
+    end
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @transaction }
@@ -96,28 +102,7 @@ class TransactionsController < ApplicationController
     end
   end
   
-  def download
-    unless params[:id].blank? && params[:transaction].blank?
-      @transaction = Transaction.find(params[:id])
-      unless @transaction.blank?
-        @transaction.increment_download_count
-        if (@transaction.unread? && current_user.id == @transaction.receiver_id )
-          @transaction.mark_mail_read 
-          current_user.decrement_unread_count
-        end
-        @document = @transaction.document
-        @transaction.receive_event(current_user.mobile)
-        respond_to do |format|
-          format.html { redirect_to URI.encode @document.doc.url(:original, false) }
-        end
-      else
-        respond_to do |format|
-          format.html { redirect_to(transactions_url) }
-        end
-      end
-    end
-  end
-
+  
   # Receive /transactions/receive
   def receive
     unless params[:transaction].blank? 
@@ -144,7 +129,7 @@ class TransactionsController < ApplicationController
       if @transaction.errors.blank?
         @transaction = Transaction.get_document(mobile, email, secret) 
         unless @transaction.blank?
-          @document = @transaction.document
+          @documents = @transaction.documents
           user = mobile.blank? ? email : mobile
           @event = @transaction.receive_event(user, params[:serial_number])
           @user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
@@ -164,18 +149,9 @@ class TransactionsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to URI.encode @document.doc.url(:original, false) }
+        format.html { render :action => "receive", :locals => {:documents => @documents} }
         format.xml #receive.xml 
       end
-    end
-  end
-  
-  # retailer transactions log
-  def retailer_txn
-    @txns = current_retailer.events.order("created_at DESC")
-    respond_to do |format|
-      format.html # receive.html.erb
-      format.xml  { render :xml => @transactions }
     end
   end
 end

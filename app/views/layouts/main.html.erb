@@ -48,18 +48,27 @@
           -->
           <% if user_signed_in? %>  
         		<%= link_to image_tag("logo.png", :width => "180"), "/transactions", :class => "brand" %> 
+          <% elsif retailer_signed_in? %>  
+            <%= link_to image_tag("logo.png", :width => "180"), retailers_transactions_url, :class => "brand" %> 
         	<% else %>  
         		<%= link_to image_tag("logo.png", :width => "180"), "/", :class => "brand" %> 
           <% end %>
-          <div class="nav-collapse">
+          <div class="nav-collapse" align="center">
+            <ul class="nav" >
+              <li><%= link_to "About us", "/about_us" %></li>
+              <li><%= link_to "Blog", "http://blog.edakia.in", :target => "_blank" %></li>
+              <li><%= link_to "Team", "/team" %></li>
+              <li><%= link_to "Careers", "/careers#op-12785-gogetters-hustlers" %></li>
+            </ul>
             <ul class="nav pull-right" >
               <% if user_signed_in? %> 
                 <li><%= link_to current_user.mobile + " (#{current_user.unread_count})", edit_user_registration_path %></li>
                 <li><%= link_to "Logout", destroy_user_session_path  %></li>
+              <% elsif retailer_signed_in? %> 
+                <li><%= link_to current_retailer.mobile, edit_retailer_registration_path %></li>
+                <li><%= link_to "Logout", destroy_retailer_session_path  %></li>
               <% else %>
-                <li><%#= render :partial => "home/login"%></li>
                 <li><%= link_to "Login", new_user_session_url  %></li>
-                <li><%#= link_to "Register", new_user_registration_url  %></li>
                 <li><%= link_to "Receive Mail", "/receive"  %></li>
               <% end %>
             </ul>
@@ -72,7 +81,7 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <% if user_signed_in? %>
-        <div class="span3">
+        <div class="span2">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <% if user_signed_in? %> 
@@ -81,36 +90,39 @@
                 <%#= render :partial => "home/login"%>
               <% end %>
               <li><%= link_to "Send Mail", new_transaction_url  %></li>
-              <li><%= link_to "Receive Mail", receive_transactions_url  %></li>   
+              <li>Credit: <%= current_user.credit %> </li>   
               <li><%= link_to "Logout", destroy_user_session_path  %></li>           
             </ul>
           </div><!--/.well -->
           <%= image_tag("mascot.jpg", :max_width => "286")%>
         </div><!--/span-->
-        <div class="span9 content">
+        <div class="span10 content">
         <% elsif retailer_signed_in? %>
-          <div class="span3">
+          <div class="span2">
             <div class="well sidebar-nav">
               <ul class="nav nav-list">
-                <li><%= link_to "All Transactions", retailer_txn_transactions_url  %></li>
-                <li><%= link_to "Retailer Logout",  destroy_retailer_session_path %></li>
+                <li>Credit: <%= current_retailer.credit  %></li>
+                <li><%= link_to "Send Mail", new_retailers_transaction_url  %></li>
+                <li><%= link_to "Receive Mail", "/receive"  %></li>
+                <li><%= link_to "Mail Tracking", retailers_transactions_url  %></li>
+                <li><%= link_to "Logout",  destroy_retailer_session_path %></li>
               </ul>
             </div><!--/.well -->
             <%= image_tag("mascot.jpg", :max_width => "286")%>
           </div><!--/span-->
-          <div class="span9 content">
+          <div class="span10 content">
         <% else %>
           <div class="span2"></div>
           <div class="span8 content">
         <% end%>
-        
-          <% unless notice.blank? %>
-            <div class="alert alert-success"><%= notice %></div>
-          <% end %>
-          <% unless alert.blank? %>
-      		  <div class="alert alert-error"><%= alert %></div>
-      		<% end %>
-          <%= yield %>
+            <% unless notice.blank? %>
+              <div class="alert alert-success"><%= notice %></div>
+            <% end %>
+            <% unless alert.blank? %>
+        		  <div class="alert alert-error"><%= alert %></div>
+        		<% end %>
+            <%= yield %>
+          </div>
         </div>
       </div><!--/row-->
       
@@ -122,12 +134,12 @@
           </div>
           <div class="span6">
             <div class="row-fluid">
-              <div class="span1"><%= link_to "About", "#" %></div>
+              <div class="span1"><%= link_to "About", "/about_us" %></div>
               <div class="span2"><%= link_to "How it works", "#" %></div>
               <div class="span1"><%= link_to "Blog", "http://blog.edakia.in", :target => "_blank" %></div>
-              <div class="span1"><%= link_to "FAQ", "#" %></div>
-              <div class="span1"><%= link_to "Team", "#"  %></div>
-              <div class="span3"><%= link_to "Terms and Conditions", "#" %></div>
+              <div class="span1"><%= link_to "Team", "/team"  %></div>
+              <div class="span2"><%= link_to "Careers", "/careers#op-12785-gogetters-hustlers" %></div>
+              <div class="span1"><%= link_to "Retailer", "/retailers/login" %></div>
             </div>
           </div>
           <div class="span4">

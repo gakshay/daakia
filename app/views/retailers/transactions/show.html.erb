@@ -6,11 +6,15 @@
 <table class="table table-bordered" style="width:50%">  
   <tbody>
       <tr>
-        <td>Mail ID</td>
+        <td>Transaction ID</td>
         <td><%= @transaction.id %>
       <tr>
         <td>Sender Mobile</td>
         <td><%= @transaction.sender_mobile %></td>
+      </tr>
+      <tr>
+        <td>Sender E-Mail ID</td>
+        <td><%= @transaction.sender_email %></td>
       </tr>
       <tr>
         <td>Receiver Mobile</td>
@@ -19,7 +23,6 @@
       <tr>
         <td>Receiver E-Mails</td>
         <td>
-        <%= @transaction.receiver_email %><br>
         <% unless @transaction.receiver_emails.blank? %>
           <% @transaction.receiver_emails.split(",").each do |email| %>
             <%= email %>
@@ -35,9 +38,9 @@
       <tr>
         <td>File Names</td>
         <td><% @transaction.documents.each do |doc| %>
-          <%= link_to doc.doc_file_name, download_transaction_document_path(:transaction_id => @transaction.id, :id => doc.id), :target => "_blank" %>
-         <br>
-        <% end %>
+            <%= doc.doc_file_name %>
+            <br>
+          <% end %>
         </td>
       </tr>
       <tr>
@@ -53,15 +56,8 @@
   </tbody>
 </table>
 
+
 <div class="form-actions">
   <%= link_to t('.back', :default => t("helpers.links.back")),
-              transactions_path, :class => 'btn'  %>
-  <%#= link_to t('.edit', :default => t("helpers.links.edit")),
-              edit_transaction_path(@transaction), :class => 'btn' %>
-  <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
-              transaction_path(@transaction),
-              :method => 'delete',
-              :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
-              :class => 'btn btn-danger' %>
-              
+              retailers_transactions_path, :class => 'btn'  %>
 </div>

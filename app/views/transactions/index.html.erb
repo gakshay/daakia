@@ -29,7 +29,12 @@ new_transaction_path,
       <% unread = (current_user.id == transaction.receiver_id && transaction.unread?) ? "class='unread'" : ""%>
       <tr <%= unread %> >
         <td><%= link_to i+1, transaction_path(transaction) %></td>
-        <td><%= link_to "#{transaction.document.doc_file_name}", download_transaction_path(transaction), :method => :post, :class => "btn btn-mini", :target => "_blank" %></td>
+        <td>
+          <% transaction.documents.each do |doc| %>
+            <%= link_to doc.doc_file_name, download_transaction_document_path(:transaction_id => transaction.id, :id => doc.id), :target => "_blank", :class => " btn btn-mini" %>
+           <br>
+          <% end %>
+        
         <td><%= transaction.document_secret %></td>
         <td><%= transaction.sender_mobile %></td>
         <td><%= transaction.receiver_mobile %><br><%= transaction.receiver_email %></td>
@@ -42,7 +47,6 @@ new_transaction_path,
           <% end   %>
         </td>
         <td>
-          <%= link_to "Download", download_transaction_path(transaction), :method => :post, :class => "btn btn-mini btn-success", :target => "_blank" %>
           <%#= link_to t('.edit', :default => t("helpers.links.edit")),
                       edit_transaction_path(transaction), :class => 'btn btn-mini' %>
           <%= link_to t('.destroy', :default => t("helpers.links.destroy")),

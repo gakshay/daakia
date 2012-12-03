@@ -1,14 +1,23 @@
 <h2>Retailer Login</h2>
 <hr>
-<%= simple_form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :class => 'form-vertical' }) do |f| %>
-  <%= f.input :mobile, :label => "Your mobile"%>
-  <%= f.input :password, :input_html => { :maxlength => 6 }%>
+
+
+<%= simple_form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :class => 'form-vertical left' }) do |f| %>
+  <br>
+  <%= f.input :mobile, :label => "Your Mobile Number"%>
+  <%= f.input :password %>
   
   <% if devise_mapping.rememberable? -%>
     <%= f.input :remember_me, :as => :boolean %>
   <% end %>
 
-  <%= f.button :submit, "Retailer Login", :class => "btn-primary"  %></div>
+  <%= f.button :submit, "Retailer Login", :class => "btn btn-primary"  %>
 <% end %>
 
+<% if current_user.blank? and current_retailer.blank? %>
+  <div class="span4 left hidden-phone">
+    <%= image_tag("mascot.jpg", :max_width => "200")%>
+  </div>
+<% end%>
+<div class="clear"></div>
 <%= render "devise/shared/links" %>

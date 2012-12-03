@@ -7,8 +7,8 @@ ActiveAdmin.register Retailer do
     column :email
     column :mobile
     column :balance
+    column :credit
     column :last_sign_in_at
-    column :sign_in_count
     default_actions
   end
   
@@ -25,6 +25,8 @@ ActiveAdmin.register Retailer do
       f.input :city
       f.input :state
       f.input :pincode
+      f.input :credit
+      f.input :plan
     end
 
     f.buttons

@@ -1,0 +1,47 @@
+<%- model_class = Transaction -%>
+<div class="page-header">
+  <h1>Send Mail</h1>
+</div>
+<%= simple_form_for @retailer_transaction, :url => retailers_transactions_path, :html => { :multipart => true, :class => 'form-vertical' } do |f| %>
+
+    <% unless @retailer_transaction.errors.blank? %>
+    <div class="alert alert-error">
+      <% @retailer_transaction.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+      <% end %>
+    </div>
+    <% end %>
+    
+    <div id="sender_email" class="left">
+    <%= f.input :sender_email, :label => "Sender's Email ID", :placeholder => 'user@domain.com', :input_html => {:class => "left"} %>
+    </div>
+    
+    <div id="sender_mobile" class="left" style="margin-left:20px;">
+    <%= f.input :sender_mobile, :label => "Sender's Mobile Number (10 digits)", :placeholder => '98xxxxxx00', :input_html => {:maxlength => 10} %>
+    </div>
+    <div class="clear"></div>
+
+    <div id="receiver_emails" class="left">
+      <%= f.input :receiver_emails, :label => 'Receiver Email (comma separated)', :id => "receiver_emails", :placeholder => 'user@domain.com', :input_html => {:rows => "3"}%>
+    </div>
+    
+    <div id="receiver_mobile" class="left" style="margin: 20px;">
+      <%= f.input :receiver_mobile, :label => 'Receiver Mobile Number (10 digits)', :autocomplete => "off", :placeholder => '98xxxxxx00', :input_html => {:maxlength => 10}%>
+    </div>
+    <div class="clear"></div>
+    
+    
+    <%=f.label :documents, "Attach Files (max 10 MB)" %>
+    <%= f.simple_fields_for :documents do |document_form| %>
+      <%= document_form.error :doc_content_type, :class => "alert alert-error" %>
+      <%= document_form.error :doc_file_size, :class => "alert alert-error" %>
+      <%= document_form.input :doc, :label_html => {:style => "display: none;"}, :as => :file %>
+    <% end %>
+    
+    <div class="clear"></div>
+    <br>
+    <%= f.input :retailer_id, :as => :hidden, :input_html => { :value => current_retailer.id } %>
+    <%= f.button :submit, "Send Mail", :class => "btn-large btn-primary" %>
+    <%= link_to "Cancel", retailers_transactions_path, :class => "btn" %>
+  
+<% end %>

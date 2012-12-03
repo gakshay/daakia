@@ -81,4 +81,26 @@ class DocumentsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def download
+    unless params[:id].blank? && params[:transaction_id].blank?
+      @transaction = Transaction.find(params[:transaction_id])
+      unless @transaction.blank?
+        @transaction.increment_download_count
+        if (@transaction.unread? && current_user.id == @transaction.receiver_id )
+          @transaction.mark_mail_read 
+          current_user.decrement_unread_count
+        end
+        @document = @transaction.documents.find params[:id]
+        @transaction.receive_event(current_user.mobile)
+        respond_to do |format|
+          format.html { redirect_to URI.encode @document.doc.url }
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to(transactions_url) }
+        end
+      end
+    end
+  end
 end
