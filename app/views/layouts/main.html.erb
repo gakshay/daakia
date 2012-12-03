@@ -53,14 +53,14 @@
         	<% else %>  
         		<%= link_to image_tag("logo.png", :width => "180"), "/", :class => "brand" %> 
           <% end %>
-          <div class="nav-collapse">
-            <ul class="nav pull-right" >
+          <div class="nav-collapse" align="center">
+            <ul class="nav" >
               <li><%= link_to "About us", "/about_us" %></li>
               <li><%= link_to "Blog", "http://blog.edakia.in", :target => "_blank" %></li>
               <li><%= link_to "Team", "/team" %></li>
               <li><%= link_to "Careers", "/careers#op-12785-gogetters-hustlers" %></li>
             </ul>
-            <ul class="nav " >
+            <ul class="nav pull-right" >
               <% if user_signed_in? %> 
                 <li><%= link_to current_user.mobile + " (#{current_user.unread_count})", edit_user_registration_path %></li>
                 <li><%= link_to "Logout", destroy_user_session_path  %></li>
