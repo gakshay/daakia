@@ -244,7 +244,7 @@ class Transaction < ActiveRecord::Base
   
   def send_recipient_email
     unless self.receiver_email.blank?
-      TransactionMailer.send_recipient_email(self).deliver if self.other_domain_receiver_email?
+      TransactionMailer.send_recipient_email(self).deliver! if self.other_domain_receiver_email?
     end
     unless self.receiver_emails.blank?
       TransactionMailer.send_multiple_recipient_emails(self).deliver!
