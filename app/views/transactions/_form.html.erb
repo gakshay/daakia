@@ -1,4 +1,4 @@
-<%= simple_form_for @transaction, :html => { :multipart => true, :class => 'form-vertical' } do |f| %>
+<%= simple_form_for @transaction, :html => { :multipart => true, :class => 'form-horizontal', :style=> "width: 50%;" } do |f| %>
     
     <% unless @transaction.errors.blank? %>
     <div class="alert alert-error">
@@ -10,20 +10,15 @@
     
     
     <div id="receiver_mobile">
-      <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00', :input_html => {:class => "left"}%>
+      <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00'%>
     </div>
-    <div id="receiver_email" style="display:none">
-      <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com', :input_html => {:class => "left"}%>
+    <div align="center">Or</div>
+    <br>
+    <div id="receiver_email">
+      <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com'%>
     </div>
-    
-    <div class="left" style="margin: -5px 0 0 20px;">
-      <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
-    </div>
-    
-    <div class="clear"></div>
-    
     <%= f.input :sender_mobile, :as => :hidden, :input_html => { :value => current_user.mobile } %>
-    
+    <br>
     <%= f.simple_fields_for :documents, @transaction.documents.first do |document_form| %>
       <%= document_form.error :doc_content_type, :class => "alert alert-error" %>
       <%= document_form.error :doc_file_size, :class => "alert alert-error" %>
@@ -31,7 +26,7 @@
     <% end%>
     <br>
     <%= f.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
-    <%= f.button :submit, "Send Mail", :class => "btn-large btn-primary" %>
     <%= link_to "Cancel", transactions_path, :class => "btn" %>
+    <%= f.button :submit, "Send Mail", :class => "btn-large btn-primary" %>
   
 <% end %>
