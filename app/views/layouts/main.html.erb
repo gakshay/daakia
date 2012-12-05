@@ -56,9 +56,11 @@
           <div class="nav-collapse" align="center">
             <ul class="nav" >
               <li><%= link_to "About us", "/about_us" %></li>
+              <li><%= link_to "How It Works", "/how_it_works" %></li>
               <li><%= link_to "Blog", "http://blog.edakia.in", :target => "_blank" %></li>
-              <li><%= link_to "Team", "/team" %></li>
+              <li><%= link_to "FAQ", "/faqs" %></li>
               <li><%= link_to "Careers", "/careers#op-12785-gogetters-hustlers" %></li>
+              <li><%= link_to "Contact Us", "/contact_us" %></li>
             </ul>
             <ul class="nav pull-right" >
               <% if user_signed_in? %> 
@@ -125,7 +127,8 @@
           </div>
         </div>
       </div><!--/row-->
-     
+     <br>
+     <br>
       <footer>
         <div class="row-fluid">
           <div class="span1">
@@ -133,10 +136,10 @@
           <div class="span6">
             <div class="row-fluid">
               <div class="span1"><%= link_to "About", "/about_us" %></div>
-              <div class="span2"><%= link_to "How it works", "#" %></div>
               <div class="span1"><%= link_to "Blog", "http://blog.edakia.in", :target => "_blank" %></div>
-              <div class="span1"><%= link_to "Team", "/team"  %></div>
-              <div class="span2"><%= link_to "Careers", "/careers#op-12785-gogetters-hustlers" %></div>
+              <div class="span1"><%= link_to "FAQ", "/faqs"  %></div>
+              <div class="span1"><%= link_to "Jobs", "/careers#op-12785-gogetters-hustlers" %></div>
+              <div class="span2"><%= link_to "Contact Us", "/contact_us" %></div>
               <div class="span1"><%= link_to "Retailer", "/retailers/login" %></div>
             </div>
           </div>

@@ -43,13 +43,17 @@ DakiaWeb::Application.routes.draw do
   
   resources :home do
     get :careers, :on => :collection
-    get :team, :on => :collection
+    get :how_it_works, :on => :collection
     get :about_us, :on => :collection
+    get :faqs, :on => :collection
+    get :contact_us, :on => :collection
   end
   
   match "about_us" => "home#about_us"
   match "careers" => "home#careers"
-  match "team" => "home#team"
+  match "how_it_works" => "home#how_it_works"
+  match "faqs" => "home#faqs"
+  match "contact_us" => "home#contact_us"
   
   
   # The priority is based upon order of creation:

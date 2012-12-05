@@ -9,14 +9,4 @@ class HomeController < ApplicationController
       redirect_to retailers_transactions_url
     end
   end
-  
-  def new 
-    @user = current_user
-  end
-  
-  def careers
-  end
-  
-  def about_us
-  end
 end
