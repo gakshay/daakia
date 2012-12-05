@@ -47,6 +47,7 @@ DakiaWeb::Application.routes.draw do
     get :about_us, :on => :collection
     get :faqs, :on => :collection
     get :contact_us, :on => :collection
+    post :thank_you, :on => :collection
   end
   
   match "about_us" => "home#about_us"
@@ -54,6 +55,7 @@ DakiaWeb::Application.routes.draw do
   match "how_it_works" => "home#how_it_works"
   match "faqs" => "home#faqs"
   match "contact_us" => "home#contact_us"
+  match "thank_you" => "home#thank_you"
   
   
   # The priority is based upon order of creation:
