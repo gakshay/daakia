@@ -27,6 +27,6 @@
     <br>
     <%= f.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
     <%= link_to "Cancel", transactions_path, :class => "btn" %>
-    <%= f.button :submit, "Send Mail", :class => "btn-large btn-primary" %>
+    <%= f.button :submit, "Send Mail", :class => "btn-large btn-warning" %>
   
 <% end %>
