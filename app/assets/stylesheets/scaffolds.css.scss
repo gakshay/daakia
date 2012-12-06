@@ -52,3 +52,16 @@ div {
   ul li {
     font-size: 12px;
     list-style: square; } }
+    
+    
+#feedback_bt a {
+width: 37px;
+height: 109px;
+background: url('/assets/feedback_bt.png') no-repeat top left;
+position: fixed;
+right: 0;
+top: 50%;
+cursor: pointer;
+z-index: 9999;
+text-indent: -1000px;
+}
