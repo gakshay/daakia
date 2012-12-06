@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121201061324) do
+ActiveRecord::Schema.define(:version => 20121205164705) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -61,6 +61,16 @@ ActiveRecord::Schema.define(:version => 20121201061324) do
 
   add_index "call_logs", ["caller"], :name => "index_call_logs_on_caller"
   add_index "call_logs", ["sid"], :name => "index_call_logs_on_sid", :unique => true
+
+  create_table "contacts", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "mobile"
+    t.string   "company"
+    t.text     "message"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "documents", :force => true do |t|
     t.integer  "user_id"

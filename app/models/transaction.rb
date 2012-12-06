@@ -9,7 +9,7 @@ class Transaction < ActiveRecord::Base
   
   validates_format_of :sender_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
   validates_presence_of :receiver_mobile, :if => :receiver_mobile_required?
-  validates_numericality_of :receiver_mobile, :only_integer => true, :if => :receiver_mobile_required?
+  validates_numericality_of :receiver_mobile, :only_integer => true, :allow_blank => true
   validates_format_of :receiver_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
  
   #validates_presence_of :receiver_email, :if => :receiver_email_required?

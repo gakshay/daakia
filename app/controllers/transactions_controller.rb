@@ -111,7 +111,7 @@ class TransactionsController < ApplicationController
       secret = params[:transaction][:document_secret]
       @transaction = Transaction.new(params[:transaction])
       if secret.blank?
-        @transaction.errors.add(:document_secret, "is required") if secret.blank?
+        @transaction.errors.add(:base, "Doc ID is required") if secret.blank?
       elsif secret.match(/^\d{6}/).blank?
         @transaction.errors.add(:document_secret, "Must be 6 Digit Long") 
       end

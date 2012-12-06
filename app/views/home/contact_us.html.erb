@@ -1,0 +1,47 @@
+<h1>Contact Us</h1>
+<hr>
+<div class="left">
+  <p>We will be happy to help you or hear your thoughts.</p>
+  <p>You can give us a call, send an E-mail or directly write to us.</p>
+  <br>
+  <br>
+  <h4>Akshay Gupta</h4>
+  <br>
+  <p>New Delhi (capital region), India</p>
+  <p>Mobile: +91-9711335593</p>
+  <p>E-Mail ID: <%= link_to "akshay@edakia.in", "mailto:akshay@edakia.in"%>
+  <br>
+  <br>
+  <h4>Shikha Jain</h4>
+  <br>
+  <p>Gurgaon, Haryana, India</p>
+  <p>E-Mail ID: <%= link_to "shikha@edakia.in", "mailto:shikha@edakia.in"%>
+  <br>
+  <br>
+  <p>Or</p>
+  <br>
+  <p>Just write to us here</p>
+  <hr>
+  <%= simple_form_for @contact, :url => thank_you_home_index_path, :html => { :class => 'form-horizontal' } do |f| %>
+    
+    <%= f.input :name, :label => "Your Name"%>
+    
+    <%= f.input :mobile, :label => "Mobile Number", :placeholder => '98xxxxxx00', :input_html => {:maxlength => 13} %>
+    
+    <%= f.input :email, :label => "Email-ID", :placeholder => 'name@domain.com' %>
+    
+    <%= f.input :company, :label => "Company" %>
+    
+    <%= f.input :message, :label => 'Message', :input_html => {:rows => "4"}%>
+    
+    <div align="center"><%= f.submit "Submit", :class => "btn btn-warning" %></div>
+  <% end %>
+  
+  
+  
+</div>
+<div class="span4 left hidden-phone">
+  <%= image_tag("mascot.jpg", :max_width => "200")%>
+</div>
+
+<div class="clear"></div>

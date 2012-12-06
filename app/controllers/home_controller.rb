@@ -10,13 +10,25 @@ class HomeController < ApplicationController
     end
   end
   
-  def new 
-    @user = current_user
+  def contact_us
+    @contact = Contact.new
+    respond_to do |format|
+      format.html # new.html.erb
+    end
   end
   
-  def careers
+  # POST /thank_you
+  def thank_you
+    @contact = Contact.new(params[:contact])
+    respond_to do |format|
+      if @contact.save
+        format.html { redirect_to(contact_us_home_index_url, :notice => 'Thanks for contacting us.') }
+      else
+        format.html { render :action => "contact_us" }
+      end
+    end
   end
   
-  def about_us
-  end
+  
+  
 end

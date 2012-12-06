@@ -12,9 +12,11 @@ class TransactionMailer < ActionMailer::Base
       @document_secret = transaction.document_secret
       unless @recipient_email.blank?
         @sender = transaction.sender_mobile
-        @document = transaction.documents.first
+        @documents = transaction.documents
         #attachments["#{transaction.document.doc_file_name}"]  = File.read("#{transaction.document.doc.url(:original, false)}")
-        mail(:to => @recipient_email, :from => "#{@sender}@edakia.in", :subject => "New mail from #{@sender}")
+        mail(:to => @recipient_email, :from => "#{@sender}@edakia.in", :subject => "#{@sender} has sent you an email")
+      else
+        self.message.perform_deliveries = false
       end
     end
   end

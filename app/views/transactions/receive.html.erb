@@ -11,7 +11,7 @@
 
   <%= simple_form_for @transaction, :url => receive_transactions_url,  :html => {:method => :get, :class => "form-vertical left"} do |f| %>
       <% unless @transaction.errors.blank? %>
-        <p class="alert">
+        <p class="alert alert-error">
           <% @transaction.errors.full_messages.each do |msg| %>
             <%= msg %><br>
           <% end %>
@@ -36,8 +36,9 @@
       
         <%#= f.input :document_secret, :label => 'Doc ID', :hint => false, :input_html => {:maxlength => 6} %>
       </div>
-  
-      <%= f.button :submit, "Receive Mail", :class => "btn-large btn-primary" %>
+      <br>
+      <br>
+      <%= f.button :submit, "Receive Mail", :class => "btn-large btn-warning" %>
   
   <% end %>
 <% elsif documents %>
