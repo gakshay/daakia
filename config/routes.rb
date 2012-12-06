@@ -43,7 +43,7 @@ DakiaWeb::Application.routes.draw do
   
   resources :home do
     get :careers, :on => :collection
-    get :how_it_works, :on => :collection
+    get :product, :on => :collection
     get :about_us, :on => :collection
     get :faqs, :on => :collection
     get :contact_us, :on => :collection
@@ -52,7 +52,7 @@ DakiaWeb::Application.routes.draw do
   
   match "about_us" => "home#about_us"
   match "careers" => "home#careers"
-  match "how_it_works" => "home#how_it_works"
+  match "product" => "home#product"
   match "faqs" => "home#faqs"
   match "contact_us" => "home#contact_us"
   match "thank_you" => "home#thank_you"
