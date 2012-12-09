@@ -41,7 +41,7 @@ class User < ActiveRecord::Base
   def self.register_user(mobile)
     unless mobile.match(/^[789][0-9]{9}$/).nil?
       password = self.generate_password
-      user = User.create(:mobile => mobile, :password => password, :password_confirmation => password, :balance => Price::User::REGISTRATION)
+      user = User.create(:mobile => mobile, :password => password, :password_confirmation => password, :balance => Price::User::REGISTRATION_CREDIT)
       unless user.id.blank?
         Report.notice("user", "New user #{user.mobile} created")
         return user

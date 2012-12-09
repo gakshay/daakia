@@ -14,6 +14,8 @@ xml.transaction do
         xml.document_size("#{document.doc_file_size} B")
       end
     end
+    #xml.cost(@transaction.events.where("action = ? or action = ?","send", "save").first.cost)
+    xml.cost(@transaction.cost)
   else
     xml.error("Document can not be sent")
     if @transaction

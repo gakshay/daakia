@@ -14,8 +14,8 @@
     </div>
     <div align="center">Or</div>
     <br>
-    <div id="receiver_email">
-      <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com'%>
+    <div id="receiver_emails">
+      <%= f.input :receiver_emails, :label => 'Receiver Email(comma separated)', :id => "receiver_emails", :placeholder => 'user@domain.com', :input_html => {:rows => "3"}%>
     </div>
     <%= f.input :sender_mobile, :as => :hidden, :input_html => { :value => current_user.mobile } %>
     <br>

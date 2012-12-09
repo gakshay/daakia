@@ -13,7 +13,7 @@ module Message
     def registration_success_template(mobile, password, amount, type)
 "Welcome to eDakia! Your number #{mobile} registered
 
-Balance: #{amount}/-
+Balance: #{amount} credit
 Password: #{password}
 
 Please save and do not share your Password."
@@ -21,7 +21,7 @@ Please save and do not share your Password."
     
     def registration_kyc_success_template(amount, type)
 "Success! You are now verified eDakia user.
-Balance: #{amount}/-
+Balance: #{amount} credit
 Account: #{type}
 Welcome to eDakia!"
     end

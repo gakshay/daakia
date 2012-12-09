@@ -28,7 +28,7 @@ class Transaction < ActiveRecord::Base
   
   # model hooks
   before_create :assign_sender, :assign_receiver, :generate_document_secret, :clean_multiple_emails
-  after_create :update_document_page_count, :send_recipient_email, :deliver_document_secret_sms, :debit_credit  # , :generate_mail_short_url
+  after_create :update_document_page_count, :debit_balance, :send_recipient_email, :deliver_document_secret_sms, :debit_credit  # , :generate_mail_short_url
   
  
   def self.get_document(mobile, email, secure_code)
@@ -68,29 +68,17 @@ class Transaction < ActiveRecord::Base
     self.sender_email.match(/@edakia\.in/).nil? unless self.sender_email.blank?
   end
   
-  # events handling
   
-  def send_event(serial_number = nil)
-    action = self.sender_mobile == self.receiver_mobile ? "save" : "send"
-    unless serial_number.nil?
-      machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
-      cost = self.cost #Price::Send::PER_PAGE_COST * self.document.pages
-      retailer = self.retailer_txn_balance(cost, serial_number)
-      self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => cost)
-      self.events.create(:machine_id => machine.id, :action => action, :user => self.sender_mobile, :cost => cost)
-    else
-      self.events.create(:action => action, :user => self.sender_mobile)
-    end
-  end
-  
+  # receive event and make it free for user and retailer right now
   def receive_event(user, serial_number = nil)
     action = "receive"
     return if user.blank?
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
-      cost, retailer_cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
-      retailer = self.retailer_txn_balance(retailer_cost, serial_number)
-      self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => retailer_cost)
+      cost = 0
+      #cost, retailer_cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
+      #retailer = self.retailer_txn_balance(retailer_cost, serial_number, action)
+      #self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => retailer_cost)
       self.events.create(:machine_id => machine.id, :action => action, :user => user, :cost => cost)
     else
       self.events.create(:action => action, :user => user)
@@ -99,22 +87,9 @@ class Transaction < ActiveRecord::Base
   
   # mail sending cost to the eDakia App user
   def txn_cost
-    # if self.document.pages == 1
-    #   self.cost =  Price::Send::SINGLE_PAGE_COST
-    # else
-    #   self.cost = Price::Send::PER_PAGE_COST * self.document.pages
-    # end
-    self.cost = Price::Send::PER_PAGE_COST * self.document.pages
-    user = User.where("id = ?", self.sender_id).select("id, mobile, balance").first
-    if (user && user.balance > 0.0)
-      if user.balance >= self.cost
-        user.balance = user.balance - self.cost
-        self.cost = 0
-      else
-        self.cost = self.cost - user.balance
-        user.balance = 0
-      end
-      user.save!
+    self.cost = 0
+    self.documents.each do |doc|
+      self.cost += Price::Send::PER_PAGE_COST * doc.pages
     end
     self.cost
   end
@@ -122,11 +97,6 @@ class Transaction < ActiveRecord::Base
   # receive transaction cost to eDakia app user
   def receive_txn_cost(user)
     user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
-    # if self.document.pages <= 5
-    #       cost =  Price::Receive::PER_PAGE_COST
-    #     else
-    #       cost = Price::Receive::PER_PAGE_COST * 2
-    #     end
     cost = Price::Receive::PER_PAGE_COST * self.document.pages
     retailer_cost = Price::Receive::RETAILER_PER_PAGE_COST * self.document.pages
     if (user && user.balance > 0.0)
@@ -143,14 +113,15 @@ class Transaction < ActiveRecord::Base
     [cost, retailer_cost]
   end
   
-  def retailer_txn_balance(cost, serial_number)
+  def retailer_txn_balance(cost, serial_number, event)
     machine = Machine.where("serial_number = ?", "#{serial_number}").includes(:retailer).first
     unless machine.blank?
       machine.retailer.balance = machine.retailer.balance - cost
       machine.retailer.save!
+      self.events.create(:machine_id => machine.id, :action => event, :user => self.sender_mobile, :cost => cost)
       Report.notice("Retailer", "#{machine.retailer.mobile} eDakia Kendra. Txn Cost: #{cost} at Machine: #{serial_number}")
+      machine.retailer
     end 
-    machine.retailer
   end
   
   protected
@@ -187,6 +158,9 @@ class Transaction < ActiveRecord::Base
     elsif !self.receiver_email.blank?
         self.receiver_mobile = nil
     end
+    if !self.receiver_emails.blank?
+        self.receiver_emails = nil
+    end
   end
 
   def generate_document_secret
@@ -197,6 +171,18 @@ class Transaction < ActiveRecord::Base
     unless self.receiver_emails.blank?
       emails = self.receiver_emails.split(",").collect do |e| e.gsub(/(\s*)?(\n*)?(\r*)?/, "") end
       self.receiver_emails = emails.join(",")
+    end
+  end
+  
+  def debit_balance
+    action = self.sender_mobile == self.receiver_mobile ? "save" : "send"
+    unless self.serial_number.blank?
+      unless self.retailer_id.blank?
+        cost = self.txn_cost
+        retailer = self.retailer_txn_balance(cost, self.serial_number, action)
+      end
+    else
+      self.events.create(:action => action, :user => self.sender_mobile)
     end
   end
   
@@ -211,34 +197,35 @@ class Transaction < ActiveRecord::Base
   def deliver_document_secret_sms
     # code to send sms to sender and receiver
     time = self.created_at.strftime("%d-%b-%Y %I:%M")
-    unless self.retailer_id.blank?
-      if !self.sender_mobile.blank? and (self.receiver_mobile != self.sender_mobile)
-        receiver = self.receiver_mobile.blank? ? self.receiver_emails.split(",").first : self.receiver_mobile
-        sender_template = Message.general_request_replied("Mail", "#{self.document_secret} To: #{receiver}", time)
-        self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
-      end
-      if !self.receiver_mobile.blank? 
-        sender = self.sender_mobile.blank? ? self.sender_email : self.sender_mobile
-        receiver_template = Message.document_receiver_template(sender, self.document_secret, time)
-        self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
-      end
-    else
-      receiver = self.receiver_mobile.blank? ? self.receiver_email : self.receiver_mobile
-      cost = self.serial_number.blank? ? 0 : self.txn_cost
-      sender = User.find_by_mobile(self.sender_mobile, :select => "id, balance")
-      balance = sender.balance
-      sender_template = Message.document_sender_success_template(cost, self.document_secret, receiver, time, balance)
-      if !self.receiver_mobile.blank? and (self.receiver_mobile != self.sender_mobile)
-        if self.other_domain_receiver_email?
-          receiver_template = Message.document_receiver_email_registered_template(self.sender_mobile, self.document_secret, time, self.receiver_email)
-        else
-          receiver_template = Message.document_receiver_template(self.sender_mobile, self.document_secret, time)
+    unless self.serial_number.blank?
+      unless self.retailer_id.blank? # machine based retailer txn
+        if !self.sender_mobile.blank? #always send sms to sender
+          receiver = self.receiver_mobile.blank? ? self.receiver_emails.split(",").first : self.receiver_mobile
+          sender_template = Message.general_request_replied("Mail", "#{self.document_secret} To: #{receiver} Txn Cost: #{self.cost}", time)
+          self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
         end
-        #deliver receiver sms
-        self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
+        # send sms to receiver if sender and recipient are different
+        if !self.receiver_mobile.blank? and (self.receiver_mobile != self.sender_mobile) 
+          sender = self.sender_mobile.blank? ? self.sender_email : self.sender_mobile
+          receiver_template = Message.document_receiver_template(sender, self.document_secret, time)
+          self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
+        end
       end
-      # deliver sender sms
-      self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
+    else # web based retailer or user transaction sms
+      if !self.retailer_id.blank? or !self.user_id.blank?
+        # send sms to sender only if sender and recipient are different
+        if !self.sender_mobile.blank? 
+          receiver = self.receiver_mobile.blank? ? self.receiver_emails.split(",").first : self.receiver_mobile
+          sender_template = Message.general_request_replied("Mail", "#{self.document_secret} To: #{receiver}", time)
+          self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
+        end
+        # always send sms to recipient
+        if !self.receiver_mobile.blank? and (self.receiver_mobile != self.sender_mobile)
+          sender = self.sender_mobile.blank? ? self.sender_email : self.sender_mobile
+          receiver_template = Message.document_receiver_template(sender, self.document_secret, time)
+          self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
+        end
+      end
     end
   end
   
@@ -252,15 +239,18 @@ class Transaction < ActiveRecord::Base
   end
   
   def debit_credit
-    unless self.retailer_id.blank?
-      self.retailer.credit -= 1
-      self.retailer.save!
+    if self.serial_number.blank?
+      unless self.retailer_id.blank?
+        self.retailer.credit -= 1
+        self.retailer.save!
+      end
     end
     unless self.user_id.blank?
       self.user.credit -= 1
       self.user.save!
     end
   end
+  
     
   def update_document_page_count
     formats = %w(application/vnd.openxmlformats-officedocument.presentationml.presentation 
