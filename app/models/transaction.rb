@@ -158,7 +158,7 @@ class Transaction < ActiveRecord::Base
     elsif !self.receiver_email.blank?
         self.receiver_mobile = nil
     end
-    if !self.receiver_emails.blank?
+    if self.receiver_emails.blank?
         self.receiver_emails = nil
     end
   end
