@@ -12,6 +12,10 @@ xml.transaction do
       end
     end
     xml.machine(@machine.serial_number) unless @machine.blank?
+    #     unless @user.blank?
+    #       xml.balance(@user.balance)
+    #     end
+    #     xml.cost(@event.cost)
   else
     xml.error("Document not found")
     xml.message("Some error occured")

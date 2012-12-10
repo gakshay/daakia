@@ -1,6 +1,5 @@
 class TransactionsController < ApplicationController
-  before_filter :authenticate_user!, :except => ["receive", "retailer_txn"]
-  before_filter :authenticate_retailer!, :only => "retailer_txn"
+  before_filter :authenticate_user!, :except => ["receive"]
   
   # GET /transactions
   # GET /transactions.xml
@@ -31,16 +30,14 @@ class TransactionsController < ApplicationController
   # POST /transactions.xml
   def create
     @transaction = Transaction.new(params[:transaction])
-    @transaction.serial_number = params[:serial_number] unless params[:serial_number].blank?
     respond_to do |format|
       if current_user.credit <= 0
          @transaction.errors.add(:base, "You have no credit. Please contact and buy more credit.")
          format.html { redirect_to(new_transaction_url, :alert => @transaction.errors.full_messages.join(". "))}
          format.xml {render :xml => @transaction.errors}
       elsif @transaction.save
-        @event = @transaction.send_event(params[:serial_number])
         @document = @transaction.documents.first
-        @user = User.find_by_mobile(@transaction.sender_mobile, :select => "id, balance")
+        #@event = @transaction.events.first
         format.html { redirect_to(@transaction, :notice => 'Mail was successfully sent.') }
         format.xml  
         #format.json  { render :json => @transaction, :status => :created, :location => @transaction }
