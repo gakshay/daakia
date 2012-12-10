@@ -8,7 +8,7 @@ class Sms < ActiveRecord::Base
   private
   
   def deliver_sms
-    if Rails.env == "production" or Rails.env == "staging"
+    if Rails.env == "production"
       sms = Message::Mobme.new(self.receiver, self.message)
       self.status_code = sms.send 
       sleep(2)

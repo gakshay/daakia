@@ -257,29 +257,25 @@ class Transaction < ActiveRecord::Base
     application/vnd.openxmlformats-officedocument.wordprocessingml.document
     application/msword
     application/vnd.ms-powerpoint
-    application/pdf
     )
-=begin
-    if self.document.doc.content_type == "application/pdf"
-      require 'open-uri' unless defined?(OpenURI)
-      begin
-        io = open(self.document.doc.url(:original, false))
-        reader = PDF::Reader.new(io)
-        self.document.pages = reader.page_count
-        self.document.save
-      rescue => ex
-        Report.error("document", "PDF Page count failed #{ex}")
-      end  
-    els
-=end
     self.documents.each do |document|
-      if formats.include?(document.doc_content_type)
+      if document.doc_content_type == "application/pdf"
+        require 'open-uri' unless defined?(OpenURI)
+        begin
+          io = open(document.doc.url(:original, false))
+          reader = PDF::Reader.new(io)
+          document.pages = reader.page_count
+          document.save
+        rescue => ex
+          Report.error("document", "PDF Page count failed #{ex}")
+        end  
+      elsif formats.include?(document.doc_content_type)
         begin
           yomu = Yomu.new(document.doc.url(:original, false))
           metadata = yomu.metadata
           unless metadata['xmpTPg:NPages'].blank?
-            self.document.pages = metadata['xmpTPg:NPages']
-            self.document.save
+            document.pages = metadata['xmpTPg:NPages']
+            document.save
           end
         rescue => ex
           Report.error("document", "Yomu Page count failed for document #{document.doc_file_name} #{ex}")
