@@ -23,7 +23,7 @@ class Transaction < ActiveRecord::Base
   
   # model hooks
   before_create :assign_sender, :assign_receiver, :generate_document_secret
-  after_create :update_document_page_count, :send_recipient_email, :deliver_document_secret_sms  # , :generate_mail_short_url
+  after_create :update_document_page_count, :send_recipient_email, #:deliver_document_secret_sms  # , :generate_mail_short_url
   
  
   def self.get_document(mobile, email, secure_code)
