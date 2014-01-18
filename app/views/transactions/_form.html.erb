@@ -1,28 +1,32 @@
-<%= simple_form_for @transaction, :html => { :multipart => true, :class => 'form-vertical' } do |f| %>
-
+<%= simple_form_for @transaction, :html => { :multipart => true, :class => 'form-horizontal', :style=> "width: 50%;" } do |f| %>
+    
+    <% unless @transaction.errors.blank? %>
+    <div class="alert alert-error">
+      <% @transaction.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+      <% end %>
+    </div>
+    <% end %>
+    
+    
     <div id="receiver_mobile">
-      <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00', :input_html => {:class => "left"}%>
+      <%= f.input :receiver_mobile, :label => 'Receiver Mobile', :placeholder => '98xxxxxx00'%>
     </div>
-    <div id="receiver_email" style="display:none">
-      <%= f.input :receiver_email, :label => 'Receiver Email', :id => "receiver_email", :placeholder => 'user@domain.com', :input_html => {:class => "left"}%>
+    <div align="center">Or</div>
+    <br>
+    <div id="receiver_emails">
+      <%= f.input :receiver_emails, :label => 'Receiver Email(comma separated)', :id => "receiver_emails", :placeholder => 'user@domain.com', :input_html => {:rows => "3"}%>
     </div>
-    
-    <div class="left" style="margin: -5px 0 0 20px;">
-      <button id="mobile_toggle" type="button" class="btn btn-warning" data-complete-text="Email" data-toggle="button">Email</button>
-    </div>
-    
-    <div class="clear"></div>
-    
     <%= f.input :sender_mobile, :as => :hidden, :input_html => { :value => current_user.mobile } %>
-    
-    <%= f.simple_fields_for :document, @transaction.document do |document_form| %>
+    <br>
+    <%= f.simple_fields_for :documents, @transaction.documents.first do |document_form| %>
       <%= document_form.error :doc_content_type, :class => "alert alert-error" %>
       <%= document_form.error :doc_file_size, :class => "alert alert-error" %>
       <%= document_form.input :doc, :label => "Your File", :as => :file %>
-      <%= document_form.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
     <% end%>
     <br>
-    <%= f.button :submit, "Send Mail", :class => "btn-large btn-primary" %>
+    <%= f.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
     <%= link_to "Cancel", transactions_path, :class => "btn" %>
+    <%= f.button :submit, "Send Mail", :class => "btn-large btn-warning" %>
   
 <% end %>

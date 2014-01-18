@@ -1,0 +1,2 @@
+module Retailers::TransactionsHelper
+end

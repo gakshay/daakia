@@ -3,11 +3,12 @@
 module Price
   module User
     REFERRAL = 5
-    REGISTRATION = 10
+    REGISTRATION = 20
+    REGISTRATION_CREDIT = 10
   end
   
   module Send
-    PER_PAGE_COST = 5
+    PER_PAGE_COST = 10
     SINGLE_PAGE_COST = 10
   end
   
@@ -17,6 +18,6 @@ module Price
   end
   
   module Retailer
-    MIN_BALANCE = 5
+    MIN_BALANCE = 10
   end
 end

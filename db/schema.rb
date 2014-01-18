@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120918125633) do
+ActiveRecord::Schema.define(:version => 20121205164705) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -62,6 +62,16 @@ ActiveRecord::Schema.define(:version => 20120918125633) do
   add_index "call_logs", ["caller"], :name => "index_call_logs_on_caller"
   add_index "call_logs", ["sid"], :name => "index_call_logs_on_sid", :unique => true
 
+  create_table "contacts", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "mobile"
+    t.string   "company"
+    t.text     "message"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "documents", :force => true do |t|
     t.integer  "user_id"
     t.string   "doc_file_name"
@@ -71,6 +81,7 @@ ActiveRecord::Schema.define(:version => 20120918125633) do
     t.integer  "sms_count"
     t.string   "direct_url"
     t.integer  "pages",            :default => 1
+    t.integer  "transaction_id"
   end
 
   add_index "documents", ["pages"], :name => "index_documents_on_pages"
@@ -115,6 +126,14 @@ ActiveRecord::Schema.define(:version => 20120918125633) do
     t.datetime "updated_at",                   :null => false
   end
 
+  create_table "plans", :force => true do |t|
+    t.string   "name"
+    t.string   "label"
+    t.integer  "limit"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "reports", :force => true do |t|
     t.string   "category"
     t.string   "severity"
@@ -146,6 +165,9 @@ ActiveRecord::Schema.define(:version => 20120918125633) do
     t.string   "pincode",                :limit => 10
     t.datetime "created_at",                                            :null => false
     t.datetime "updated_at",                                            :null => false
+    t.integer  "plan_id",                              :default => 1
+    t.integer  "credit",                               :default => 150
+    t.string   "shop_name"
   end
 
   add_index "retailers", ["email"], :name => "index_retailers_on_email", :unique => true
@@ -182,14 +204,15 @@ ActiveRecord::Schema.define(:version => 20120918125633) do
     t.integer  "receiver_id"
     t.string   "receiver_mobile", :limit => 64
     t.string   "receiver_email"
-    t.boolean  "sms_sent",                      :default => false
-    t.integer  "sms_count"
-    t.datetime "sms_sent_time"
     t.datetime "created_at",                                       :null => false
     t.datetime "updated_at",                                       :null => false
     t.boolean  "active",                        :default => true
     t.integer  "download_count",                :default => 0
     t.boolean  "read",                          :default => false
+    t.string   "sender_email"
+    t.integer  "user_id"
+    t.integer  "retailer_id"
+    t.text     "receiver_emails"
   end
 
   add_index "transactions", ["receiver_email"], :name => "index_transactions_on_receiver_email"
@@ -225,6 +248,7 @@ ActiveRecord::Schema.define(:version => 20120918125633) do
     t.float    "balance",                              :default => 0.0
     t.integer  "referee_id"
     t.integer  "role_id"
+    t.integer  "credit",                               :default => 10
   end
 
   add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token", :unique => true

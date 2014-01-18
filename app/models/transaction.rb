@@ -1,34 +1,39 @@
 class Transaction < ActiveRecord::Base
   
   default_scope {where(:active => true)}
-  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :document_attributes, :document_secret, :active, :read
+  attr_accessible :sender_mobile, :receiver_mobile, :receiver_email, :documents_attributes, :document_secret, :active, :read, :user_id, :retailer_id, :receiver_emails, :sender_email
   attr_accessor :serial_number, :cost
-  validates_presence_of :sender_mobile
-  validates_numericality_of :sender_mobile, :only_integer => true, :allow_nil => true
+  validates_presence_of :sender_mobile, :if => :sender_mobile_required?
+  validates_numericality_of :sender_mobile, :only_integer => true, :allow_blank => true
   validates_format_of :sender_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
   
+  validates_format_of :sender_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
   validates_presence_of :receiver_mobile, :if => :receiver_mobile_required?
-  validates_numericality_of :receiver_mobile, :only_integer => true, :if => :receiver_mobile_required?
+  validates_numericality_of :receiver_mobile, :only_integer => true, :allow_blank => true
   validates_format_of :receiver_mobile, :with => /(^[789][0-9]{9}$)|(^91[789][0-9]{9}$)/i, :allow_blank => true
  
-  validates_presence_of :receiver_email, :if => :receiver_email_required?
+  #validates_presence_of :receiver_email, :if => :receiver_email_required?
   validates_format_of :receiver_email, :with => /\A([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})\z/i, :allow_blank => true
+  validates :documents, :presence => {:message => "There should be atleast one file attached"}
+  validates_format_of :receiver_emails, :with => /\A(([\w\.%\+\-]+)@([\w\-]+\.)+([\w]{2,})(\n?\s?)*([,]\s?\n?)*)*\z/i, :allow_blank => true, :message => "is invalid or not comma separated"
 
-  belongs_to :document
-  accepts_nested_attributes_for :document
+  has_many :documents
+  accepts_nested_attributes_for :documents
   
   has_many :events
   has_many :smss, :as => :service
   has_many :mail_urls
+  belongs_to :user
+  belongs_to :retailer
   
   # model hooks
-  before_create :assign_sender, :assign_receiver, :generate_document_secret
-  after_create :update_document_page_count, :send_recipient_email, #:deliver_document_secret_sms  # , :generate_mail_short_url
+  before_create :assign_sender, :assign_receiver, :generate_document_secret, :clean_multiple_emails
+  after_create :update_document_page_count, :debit_balance, :send_recipient_email, :deliver_document_secret_sms, :debit_credit  # , :generate_mail_short_url
   
  
   def self.get_document(mobile, email, secure_code)
     unless (mobile.blank? or email.blank?) and secure_code.blank?
-      transaction = Transaction.where("(sender_mobile = ? OR receiver_mobile = ? OR receiver_email = ?) AND document_secret = ?", mobile, mobile, email, secure_code).first
+      transaction = Transaction.where("(sender_mobile = ? OR receiver_mobile = ? OR receiver_email = ? or receiver_emails like ?) AND document_secret = ?", mobile, mobile, email, "%#{email}%", secure_code).first
       unless transaction.blank?
         transaction.increment_download_count 
         if (transaction.unread? && (transaction.receiver_mobile == mobile || transaction.receiver_email == email))
@@ -59,29 +64,21 @@ class Transaction < ActiveRecord::Base
     self.receiver_email.match(/@edakia\.in/).nil? unless self.receiver_email.blank?
   end
   
-  # events handling
-  
-  def send_event(serial_number = nil)
-    action = self.sender_mobile == self.receiver_mobile ? "save" : "send"
-    unless serial_number.nil?
-      machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
-      cost = self.cost #Price::Send::PER_PAGE_COST * self.document.pages
-      retailer = self.retailer_txn_balance(cost, serial_number)
-      self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => cost)
-      self.events.create(:machine_id => machine.id, :action => action, :user => self.sender_mobile, :cost => cost)
-    else
-      self.events.create(:action => action, :user => self.sender_mobile)
-    end
+  def other_domain_sender_email?
+    self.sender_email.match(/@edakia\.in/).nil? unless self.sender_email.blank?
   end
   
+  
+  # receive event and make it free for user and retailer right now
   def receive_event(user, serial_number = nil)
     action = "receive"
     return if user.blank?
     unless serial_number.nil?
       machine = Machine.where("serial_number = ?", serial_number).first_or_create!(:serial_number => serial_number)
-      cost, retailer_cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
-      retailer = self.retailer_txn_balance(retailer_cost, serial_number)
-      self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => retailer_cost)
+      cost = 0
+      #cost, retailer_cost = self.receive_txn_cost(user) #Price::Receive::PER_PAGE_COST * self.document.pages
+      #retailer = self.retailer_txn_balance(retailer_cost, serial_number, action)
+      #self.events.create(:machine_id => machine.id, :action => "CSP-#{action}", :user => retailer.mobile, :cost => retailer_cost)
       self.events.create(:machine_id => machine.id, :action => action, :user => user, :cost => cost)
     else
       self.events.create(:action => action, :user => user)
@@ -90,22 +87,9 @@ class Transaction < ActiveRecord::Base
   
   # mail sending cost to the eDakia App user
   def txn_cost
-    # if self.document.pages == 1
-    #   self.cost =  Price::Send::SINGLE_PAGE_COST
-    # else
-    #   self.cost = Price::Send::PER_PAGE_COST * self.document.pages
-    # end
-    self.cost = Price::Send::PER_PAGE_COST * self.document.pages
-    user = User.where("id = ?", self.sender_id).select("id, mobile, balance").first
-    if (user && user.balance > 0.0)
-      if user.balance >= self.cost
-        user.balance = user.balance - self.cost
-        self.cost = 0
-      else
-        self.cost = self.cost - user.balance
-        user.balance = 0
-      end
-      user.save!
+    self.cost = 0
+    self.documents.each do |doc|
+      self.cost += Price::Send::PER_PAGE_COST * doc.pages
     end
     self.cost
   end
@@ -113,11 +97,6 @@ class Transaction < ActiveRecord::Base
   # receive transaction cost to eDakia app user
   def receive_txn_cost(user)
     user = User.where("mobile = ? or email = ?", user, user).select("id, mobile, balance").first
-    # if self.document.pages <= 5
-    #       cost =  Price::Receive::PER_PAGE_COST
-    #     else
-    #       cost = Price::Receive::PER_PAGE_COST * 2
-    #     end
     cost = Price::Receive::PER_PAGE_COST * self.document.pages
     retailer_cost = Price::Receive::RETAILER_PER_PAGE_COST * self.document.pages
     if (user && user.balance > 0.0)
@@ -134,20 +113,25 @@ class Transaction < ActiveRecord::Base
     [cost, retailer_cost]
   end
   
-  def retailer_txn_balance(cost, serial_number)
+  def retailer_txn_balance(cost, serial_number, event)
     machine = Machine.where("serial_number = ?", "#{serial_number}").includes(:retailer).first
     unless machine.blank?
       machine.retailer.balance = machine.retailer.balance - cost
       machine.retailer.save!
+      self.events.create(:machine_id => machine.id, :action => event, :user => self.sender_mobile, :cost => cost)
       Report.notice("Retailer", "#{machine.retailer.mobile} eDakia Kendra. Txn Cost: #{cost} at Machine: #{serial_number}")
+      machine.retailer
     end 
-    machine.retailer
   end
   
   protected
   
+  def sender_mobile_required?
+    self.sender_email.blank?
+  end
+  
   def receiver_mobile_required?
-    self.receiver_email.blank?
+    self.receiver_email.blank? && self.receiver_emails.blank?
   end
 
   def receiver_email_required?
@@ -159,6 +143,7 @@ class Transaction < ActiveRecord::Base
   def assign_sender
     user = User.find_by_mobile(self.sender_mobile, :select => "id")
     self.sender_id = user.id unless user.blank?
+    self.sender_email = "#{self.sender_mobile}@edakia.in" if self.sender_email.blank?
   end
 
   def assign_receiver
@@ -173,10 +158,32 @@ class Transaction < ActiveRecord::Base
     elsif !self.receiver_email.blank?
         self.receiver_mobile = nil
     end
+    if self.receiver_emails.blank?
+        self.receiver_emails = nil
+    end
   end
 
   def generate_document_secret
     self.document_secret = "%06d" % rand(10**6) #Time.now.to_i.to_s(36)
+  end
+  
+  def clean_multiple_emails
+    unless self.receiver_emails.blank?
+      emails = self.receiver_emails.split(",").collect do |e| e.gsub(/(\s*)?(\n*)?(\r*)?/, "") end
+      self.receiver_emails = emails.join(",")
+    end
+  end
+  
+  def debit_balance
+    action = self.sender_mobile == self.receiver_mobile ? "save" : "send"
+    unless self.serial_number.blank?
+      unless self.retailer_id.blank?
+        cost = self.txn_cost
+        retailer = self.retailer_txn_balance(cost, self.serial_number, action)
+      end
+    else
+      self.events.create(:action => action, :user => self.sender_mobile)
+    end
   end
   
   def generate_mail_short_url
@@ -189,31 +196,61 @@ class Transaction < ActiveRecord::Base
 
   def deliver_document_secret_sms
     # code to send sms to sender and receiver
-    receiver = self.receiver_mobile.blank? ? self.receiver_email : self.receiver_mobile
     time = self.created_at.strftime("%d-%b-%Y %I:%M")
-    cost = self.serial_number.blank? ? 0 : self.txn_cost
-    sender = User.find_by_mobile(self.sender_mobile, :select => "id, balance")
-    balance = sender.balance
-    sender_template = Message.document_sender_success_template(cost, self.document_secret, receiver, time, balance)
-    if !self.receiver_mobile.blank? and (self.receiver_mobile != self.sender_mobile)
-      if self.other_domain_receiver_email?
-        receiver_template = Message.document_receiver_email_registered_template(self.sender_mobile, self.document_secret, time, self.receiver_email)
-      else
-        receiver_template = Message.document_receiver_template(self.sender_mobile, self.document_secret, time)
+    unless self.serial_number.blank?
+      unless self.retailer_id.blank? # machine based retailer txn
+        if !self.sender_mobile.blank? #always send sms to sender
+          receiver = self.receiver_mobile.blank? ? self.receiver_emails.split(",").first : self.receiver_mobile
+          sender_template = Message.general_request_replied("Mail", "#{self.document_secret} To: #{receiver} Txn Cost: #{self.cost}", time)
+          self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
+        end
+        # send sms to receiver if sender and recipient are different
+        if !self.receiver_mobile.blank? and (self.receiver_mobile != self.sender_mobile) 
+          sender = self.sender_mobile.blank? ? self.sender_email : self.sender_mobile
+          receiver_template = Message.document_receiver_template(sender, self.document_secret, time)
+          self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
+        end
       end
-      #deliver receiver sms
-      self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
+    else # web based retailer or user transaction sms
+      if !self.retailer_id.blank? or !self.user_id.blank?
+        # send sms to sender only if sender and recipient are different
+        if !self.sender_mobile.blank? 
+          receiver = self.receiver_mobile.blank? ? self.receiver_emails.split(",").first : self.receiver_mobile
+          sender_template = Message.general_request_replied("Mail", "#{self.document_secret} To: #{receiver}", time)
+          self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
+        end
+        # always send sms to recipient
+        if !self.receiver_mobile.blank? and (self.receiver_mobile != self.sender_mobile)
+          sender = self.sender_mobile.blank? ? self.sender_email : self.sender_mobile
+          receiver_template = Message.document_receiver_template(sender, self.document_secret, time)
+          self.smss.create(:receiver => self.receiver_mobile, :message => receiver_template)
+        end
+      end
     end
-    # deliver sender sms
-    self.smss.create(:receiver => self.sender_mobile, :message => sender_template)
   end
   
   def send_recipient_email
     unless self.receiver_email.blank?
-      TransactionMailer.send_recipient_email(self).deliver if self.other_domain_receiver_email?
+      TransactionMailer.send_recipient_email(self).deliver! if self.other_domain_receiver_email?
+    end
+    unless self.receiver_emails.blank?
+      TransactionMailer.send_multiple_recipient_emails(self).deliver!
     end
   end
-
+  
+  def debit_credit
+    if self.serial_number.blank?
+      unless self.retailer_id.blank?
+        self.retailer.credit -= 1
+        self.retailer.save!
+      end
+    end
+    unless self.user_id.blank?
+      self.user.credit -= 1
+      self.user.save!
+    end
+  end
+  
     
   def update_document_page_count
     formats = %w(application/vnd.openxmlformats-officedocument.presentationml.presentation 
@@ -221,28 +258,30 @@ class Transaction < ActiveRecord::Base
     application/msword
     application/vnd.ms-powerpoint
     )
-    if self.document.doc.content_type == "application/pdf"
-      require 'open-uri' unless defined?(OpenURI)
-      begin
-        io = open(self.document.doc.url(:original, false))
-        reader = PDF::Reader.new(io)
-        self.document.pages = reader.page_count
-        self.document.save
-      rescue => ex
-        Report.error("document", "PDF Page count failed #{ex}")
-      end  
-    elsif formats.include?(self.document.doc.content_type)
-      begin
-        yomu = Yomu.new(self.document.doc.url(:original, false))
-        metadata = yomu.metadata
-        unless metadata['xmpTPg:NPages'].blank?
-          self.document.pages = metadata['xmpTPg:NPages']
-          self.document.save
+    self.documents.each do |document|
+      if document.doc_content_type == "application/pdf"
+        require 'open-uri' unless defined?(OpenURI)
+        begin
+          io = open(document.doc.url(:original, false))
+          reader = PDF::Reader.new(io)
+          document.pages = reader.page_count
+          document.save
+        rescue => ex
+          Report.error("document", "PDF Page count failed #{ex}")
+        end  
+      elsif formats.include?(document.doc_content_type)
+        begin
+          yomu = Yomu.new(document.doc.url(:original, false))
+          metadata = yomu.metadata
+          unless metadata['xmpTPg:NPages'].blank?
+            document.pages = metadata['xmpTPg:NPages']
+            document.save
+          end
+        rescue => ex
+          Report.error("document", "Yomu Page count failed for document #{document.doc_file_name} #{ex}")
         end
-      rescue => ex
-        Report.error("document", "Yomu Page count failed #{ex}")
-      end
-    end  
+      end 
+    end 
   end #update document page count
   
 end #model transaction

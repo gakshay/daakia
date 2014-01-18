@@ -19,8 +19,8 @@ class User < ActiveRecord::Base
   before_save :credit_referee_amount
   after_create :send_user_registration_sms
   
-  has_many :documents
-  has_many :transactions, :through => :documents
+  #has_many :documents
+  has_many :transactions#, :through => :documents
   has_many :referrals, :class_name => "User", :foreign_key => "referee_id"
   belongs_to :referee, :class_name => "User"
   has_many :smss, :as => :service
@@ -41,7 +41,7 @@ class User < ActiveRecord::Base
   def self.register_user(mobile)
     unless mobile.match(/^[789][0-9]{9}$/).nil?
       password = self.generate_password
-      user = User.create(:mobile => mobile, :password => password, :password_confirmation => password, :balance => Price::User::REGISTRATION)
+      user = User.create(:mobile => mobile, :password => password, :password_confirmation => password, :balance => Price::User::REGISTRATION_CREDIT)
       unless user.id.blank?
         Report.notice("user", "New user #{user.mobile} created")
         return user
